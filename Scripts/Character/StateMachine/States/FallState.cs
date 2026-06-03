@@ -57,7 +57,7 @@ public partial class FallState : State
         if (input.IsBuffered(GameAction.Attack))
         {
             input.Consume(GameAction.Attack);
-            FSM.TransitionTo("AttackState", "attack_type", "nair");
+            FSM.TransitionTo("AttackState", "attack_type", "NeutralAir");
             return;
         }
     }

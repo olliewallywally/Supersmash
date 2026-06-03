@@ -4,86 +4,106 @@ using Godot.Collections;
 namespace Supersmash;
 
 /// <summary>
-/// Drives an attack through its three phases: Startup → Active → Recovery.
-/// Frame counts for each phase are supplied at runtime via the msg dictionary
-/// (or read from a lookup table — implement AttackLibrary for that later).
+/// Drives one attack through Startup → Active → Recovery, reading all timing and
+/// payload data from the character's AttackLibrary (no hard-coded numbers).
 ///
-/// Phase boundaries:
-///   [0,          StartupFrames)   — no hitbox, character is committing to the attack
-///   [StartupFrames, ActiveEnd)    — hitbox ACTIVE, can confirm a hit
-///   [ActiveEnd, TotalFrames)      — hitbox off, recovery lag, punishable
+/// Entry contract:
+///   FSM.TransitionTo("AttackState", "attack_type", "Jab");
+/// The "attack_type" value is the AttackId looked up in Character.Attacks.
 ///
-/// On completion the state transitions back to Idle or Fall depending on grounded status.
+/// ── How frames are tracked precisely ─────────────────────────────────────────
+/// _frame is a plain integer incremented exactly once per physics tick (the first
+/// PhysicsUpdate sets it to 1). Because _PhysicsProcess runs on the fixed 60 Hz
+/// tick — never delta-time — frame N here is the same wall-clock moment on every
+/// machine. The hitbox is armed on the tick _frame == FirstActiveFrame and disarmed
+/// on the tick _frame == FirstRecoveryFrame: exact, deterministic, rollback-safe.
+///
+/// ── How double-hits are prevented ────────────────────────────────────────────
+/// The Hitbox node owns a HashSet of already-hit target instance IDs, cleared each
+/// time Activate() is called. While live it records every target it confirms and
+/// ignores repeats, so a target overlapping the box for all ActiveFrames is hit once.
 /// </summary>
 public partial class AttackState : State
 {
-    // These are set from the msg dict in Enter(); defaults are safe fallbacks.
-    private int _startupFrames = 5;
-    private int _activeFrames  = 3;
-    private int _recoveryFrames = 10;
-    private int _totalFrames   => _startupFrames + _activeFrames + _recoveryFrames;
-
-    private int _frameCount = 0;
-    private bool _hitboxActive = false;
-
-    // The hitbox node driven by this state. Resolved by name in Enter().
-    private Hitbox? _hitbox;
+    private AttackData? _attack;
+    private Hitbox?     _hitbox;
+    private int         _frame;
+    private bool        _hitboxLive;
 
     public override void Enter(Dictionary? msg = null)
     {
-        _frameCount   = 0;
-        _hitboxActive = false;
+        _frame      = 0;
+        _hitboxLive = false;
+        _hitbox     = null;
+        _attack     = null;
 
-        // Read per-attack tuning from the transition message.
-        if (msg is not null)
+        string attackId = string.Empty;
+        if (msg is not null && msg.TryGetValue("attack_type", out Variant v))
+            attackId = v.AsString();
+
+        _attack = Character.Attacks?.Get(attackId);
+        if (_attack is null)
         {
-            if (msg.TryGetValue("startup_frames",  out Variant s)) _startupFrames  = s.AsInt32();
-            if (msg.TryGetValue("active_frames",   out Variant a)) _activeFrames   = a.AsInt32();
-            if (msg.TryGetValue("recovery_frames", out Variant r)) _recoveryFrames = r.AsInt32();
+            // Unknown move — bail safely on the next tick (never transition from Enter).
+            GD.PushError($"[AttackState] No AttackData for '{attackId}'. Aborting to neutral.");
+            return;
+        }
 
-            // Resolve the hitbox node by the name specified in the message,
-            // e.g. msg["hitbox_node"] = "JabHitbox". Allows per-attack hitbox shapes.
-            if (msg.TryGetValue("hitbox_node", out Variant h))
-                _hitbox = Character.GetNodeOrNull<Hitbox>(h.AsString());
+        // Resolve and pre-arm the hitbox node with this attack's payload + tuning.
+        if (!string.IsNullOrEmpty(_attack.HitboxNodeName))
+        {
+            _hitbox = Character.GetNodeOrNull<Hitbox>(_attack.HitboxNodeName);
+            if (_hitbox is not null)
+            {
+                _hitbox.Data              = _attack.PrimaryHitbox;
+                _hitbox.HitstunMultiplier = _attack.HitstunMultiplier;
+            }
+            else
+            {
+                GD.PushWarning($"[AttackState] Hitbox node '{_attack.HitboxNodeName}' not found on {Character.Name}.");
+            }
         }
     }
 
     public override void Exit()
     {
-        _hitbox?.Deactivate();
-        _hitboxActive = false;
+        // Safety net: never leave a hitbox live across a state change.
+        if (_hitboxLive) _hitbox?.Deactivate();
+        _hitboxLive = false;
     }
 
     public override void PhysicsUpdate(double delta)
     {
-        _frameCount++;
-
-        // ── Startup ───────────────────────────────────────────────────────────
-        if (_frameCount < _startupFrames)
+        // Abort path for an unknown attack (we deferred this out of Enter).
+        if (_attack is null)
+        {
+            FSM.TransitionTo(Character.IsOnFloor() ? "IdleState" : "FallState");
             return;
-
-        // ── First active frame ────────────────────────────────────────────────
-        if (_frameCount == _startupFrames && !_hitboxActive)
-        {
-            _hitbox?.Activate();
-            _hitboxActive = true;
         }
 
-        // ── Last active frame → deactivate ────────────────────────────────────
-        int activeEnd = _startupFrames + _activeFrames;
-        if (_frameCount == activeEnd && _hitboxActive)
+        _frame++;
+
+        // First active frame → arm the hitbox.
+        if (_frame == _attack.FirstActiveFrame && !_hitboxLive && _hitbox is not null)
         {
-            _hitbox?.Deactivate();
-            _hitboxActive = false;
+            _hitbox.Activate();
+            _hitboxLive = true;
         }
 
-        // ── Recovery complete → exit attack ──────────────────────────────────
-        if (_frameCount >= _totalFrames)
+        // First recovery frame → disarm the hitbox.
+        if (_frame == _attack.FirstRecoveryFrame && _hitboxLive && _hitbox is not null)
+        {
+            _hitbox.Deactivate();
+            _hitboxLive = false;
+        }
+
+        // Past the final recovery frame → return to neutral.
+        if (_frame > _attack.TotalFrames)
         {
             FSM.TransitionTo(Character.IsOnFloor() ? "IdleState" : "FallState");
         }
     }
 
-    // Input is intentionally NOT handled during an attack.
-    // Buffered inputs (jump, etc.) will naturally fire in the next state.
+    // Inputs are intentionally not handled mid-attack; buffered presses (jump, etc.)
+    // fire naturally in the next state once recovery ends.
 }

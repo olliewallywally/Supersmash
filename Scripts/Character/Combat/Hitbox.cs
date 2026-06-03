@@ -4,38 +4,41 @@ using System.Collections.Generic;
 namespace Supersmash;
 
 /// <summary>
-/// An active hitbox on an attacking character.
-/// Attach as a child of an Area2D that has its own CollisionShape2D.
+/// An active hitbox on an attacking character (an Area2D with a CollisionShape2D child).
 ///
-/// Scene structure:
-///   HitboxContainer (Area2D)
-///   └── Hitbox.cs script on the Area2D
-///       └── CollisionShape2D (shape reflects the actual hitbox region)
+/// Lifecycle: AttackState arms it (sets Data + HitstunMultiplier, calls Activate) on the
+/// first active frame and Deactivate()s it on the first recovery frame. While live, any
+/// enemy Hurtbox that overlaps triggers a hit, routed to that target's ReceiveHit.
 ///
-/// The owning attack activates/deactivates this node per active frame.
-/// Hitbox tracks which targets it has already hit during this attack instance
-/// to prevent multi-hitting on a single swing.
+/// Double-hit prevention: _alreadyHit records each target's instance id on contact and
+/// is cleared on Activate(), so one target is hit at most once per activation window.
+/// (Multi-hit moves will later re-arm per hit, or use a per-hit refresh interval.)
 /// </summary>
 public partial class Hitbox : Area2D
 {
     [Export] public HitboxData? Data { get; set; }
 
-    /// Characters this hitbox has already confirmed a hit on in this activation window.
-    /// Cleared when the hitbox is deactivated (end of active frames).
+    /// Per-attack hitstun scaling, set by AttackState from AttackData.HitstunMultiplier.
+    public float HitstunMultiplier { get; set; } = 1f;
+
+    /// The character that owns/threw this hitbox. Set once by CharacterController._Ready.
+    /// Used to attribute the hit and to prevent self-damage.
+    public CharacterController? AttackerRef { get; set; }
+
+    /// Targets already hit during the current activation window.
     private readonly HashSet<ulong> _alreadyHit = new();
 
+    /// Emitted after a confirmed hit, for VFX / SFX / camera-shake listeners.
     [Signal] public delegate void HitConfirmedEventHandler(CharacterController target, HitboxData data);
 
     public override void _Ready()
     {
-        // Hitboxes start inactive; the AttackState enables them on the first active frame.
+        // Inactive until an attack arms it.
         Monitoring  = false;
         Monitorable = false;
-
         AreaEntered += OnAreaEntered;
     }
 
-    /// Enable collision detection. Call on the first active frame of the attack.
     public void Activate()
     {
         _alreadyHit.Clear();
@@ -43,7 +46,6 @@ public partial class Hitbox : Area2D
         Monitorable = true;
     }
 
-    /// Disable collision detection. Call on the first recovery frame.
     public void Deactivate()
     {
         Monitoring  = false;
@@ -53,19 +55,17 @@ public partial class Hitbox : Area2D
     private void OnAreaEntered(Area2D area)
     {
         if (Data is null) return;
-
-        // Walk up to find the Hurtbox component and its owning CharacterController.
         if (area is not Hurtbox hurtbox) return;
-        if (hurtbox.Owner is not CharacterController target) return;
+        if (hurtbox.GetParent() is not CharacterController target) return;
 
-        // Prevent hitting the same target twice in one swing.
+        // Never hit ourselves.
+        if (AttackerRef is not null && AttackerRef == target) return;
+
+        // Hit each target at most once per activation.
         ulong targetId = target.GetInstanceId();
-        if (_alreadyHit.Contains(targetId)) return;
+        if (!_alreadyHit.Add(targetId)) return;
 
-        // Prevent self-hit.
-        if (Owner is CharacterController attacker && attacker == target) return;
-
-        _alreadyHit.Add(targetId);
+        target.ReceiveHit(AttackerRef ?? target, Data, HitstunMultiplier);
         EmitSignal(SignalName.HitConfirmed, target, Data);
     }
 }

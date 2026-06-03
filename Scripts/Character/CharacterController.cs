@@ -1,5 +1,6 @@
 using Godot;
 using Godot.Collections;
+using System.Collections.Generic;
 
 namespace Supersmash;
 
@@ -23,8 +24,9 @@ public partial class CharacterController : CharacterBody2D
 {
     // ── Inspector ─────────────────────────────────────────────────────────────
 
-    [Export] public CharacterData Data { get; private set; } = null!;
-    [Export] public int PlayerIndex    { get; set; }         = 0;
+    [Export] public CharacterData Data    { get; private set; } = null!;
+    [Export] public AttackLibrary? Attacks { get; private set; }
+    [Export] public int PlayerIndex       { get; set; }         = 0;
 
     // ── Component references (resolved in _Ready) ─────────────────────────────
 
@@ -64,9 +66,20 @@ public partial class CharacterController : CharacterBody2D
         Input.PlayerIndex    = PlayerIndex;
         AirJumpsRemaining    = Data.MaxAirJumps;
 
-        // Wire hit-reception directly on the controller.
-        // The Hitbox that confirmed the hit routes here via signal.
-        // (Connected from Hitbox.HitConfirmed by the AttackState of the attacker.)
+        // Stamp every hitbox we own with a back-reference to this controller, so a
+        // confirmed hit can be attributed to us (and self-hits filtered out).
+        foreach (Hitbox hitbox in FindHitboxes(this))
+            hitbox.AttackerRef = this;
+    }
+
+    /// Recursively collect all Hitbox descendants of <paramref name="node"/>.
+    private static IEnumerable<Hitbox> FindHitboxes(Node node)
+    {
+        foreach (Node child in node.GetChildren())
+        {
+            if (child is Hitbox hb) yield return hb;
+            foreach (Hitbox nested in FindHitboxes(child)) yield return nested;
+        }
     }
 
     public override void _PhysicsProcess(double delta)
@@ -93,7 +106,8 @@ public partial class CharacterController : CharacterBody2D
     // ── Hit reception (called by attacker's Hitbox signal) ───────────────────
 
     /// Process a confirmed hit from an attacker.
-    public void ReceiveHit(CharacterController attacker, HitboxData hitboxData)
+    /// <param name="hitstunMultiplier">Attack-level hitstun scale from AttackData.</param>
+    public void ReceiveHit(CharacterController attacker, HitboxData hitboxData, float hitstunMultiplier = 1f)
     {
         if (HurtboxContainer.HasSuperArmour)
         {
@@ -111,7 +125,8 @@ public partial class CharacterController : CharacterBody2D
         if (!hitboxData.IgnoresDI)
             launchVelocity = MovementComponent.ApplyDI(launchVelocity, Input.MoveStick);
 
-        int hitstunFrames = CombatComponent.CalculateHitstun(hitboxData, knockbackMagnitude);
+        int hitstunFrames = Mathf.RoundToInt(
+            CombatComponent.CalculateHitstun(hitboxData, knockbackMagnitude) * hitstunMultiplier);
 
         FSM.TransitionTo("HitstunState", new Dictionary
         {

@@ -31,7 +31,7 @@ public partial class IdleState : State
         if (input.IsBuffered(GameAction.Attack))
         {
             input.Consume(GameAction.Attack);
-            FSM.TransitionTo("AttackState", "attack_type", "jab");
+            FSM.TransitionTo("AttackState", "attack_type", "Jab");
             return;
         }
     }

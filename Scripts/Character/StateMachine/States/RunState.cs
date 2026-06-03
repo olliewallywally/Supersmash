@@ -23,7 +23,7 @@ public partial class RunState : State
         {
             input.Consume(GameAction.Attack);
             // Smash attack if strong input, tilt otherwise — placeholder logic.
-            string type = Mathf.Abs(input.MoveStick.X) > 0.85f ? "fsmash" : "ftilt";
+            string type = Mathf.Abs(input.MoveStick.X) > 0.85f ? "ForwardSmash" : "ForwardTilt";
             FSM.TransitionTo("AttackState", "attack_type", type);
             return;
         }
