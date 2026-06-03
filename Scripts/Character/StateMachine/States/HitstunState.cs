@@ -4,40 +4,48 @@ using Godot.Collections;
 namespace Supersmash;
 
 /// <summary>
-/// The defender's experience of being hit.
+/// The defender's experience of being hit. Two sequential sub-phases:
 ///
-/// Two sub-phases:
-///   1. Hitlag   — freeze frame. Both attacker and defender pause for HitlagFrames.
-///                 Creates the satisfying "crunch" of a confirmed hit.
-///   2. Hitstun  — defender tumbles in the knockback direction, unable to act,
-///                 for HitstunFrames ticks. Player can influence trajectory via DI
-///                 (already applied by CharacterController.ReceiveHit before entering).
+///   1. Hitlag  — Both characters freeze for HitlagFrames ticks. This is the
+///               "crunch" of a confirmed hit. During this window the defender's
+///               stick position is read for SDI (future feature — shifts position
+///               slightly each hitlag frame to escape combos early).
+///               IMPORTANT: the launch velocity is STORED, not applied, until
+///               hitlag ends — applying it at entry then zeroing it in the loop
+///               is a bug that sends every character straight down.
 ///
-/// During hitstun the player can hold a direction to set up DI for the NEXT hit
-/// (SDI / smash DI is a future extension — it shifts position during hitlag).
+///   2. Hitstun — Defender tumbles along the stored launch vector for HitstunFrames
+///               ticks. Gravity still applies (creates a natural arc). No other
+///               actions are available until the counter expires.
 /// </summary>
 public partial class HitstunState : State
 {
-    private int _hitlagFrames  = 0;
-    private int _hitstunFrames = 0;
-    private int _frameCount    = 0;
-    private bool _inHitlag     = true;
+    private int     _hitlagFrames  = 0;
+    private int     _hitstunFrames = 0;
+    private int     _frameCount    = 0;
+    private bool    _inHitlag      = true;
+    private Vector2 _launchVelocity = Vector2.Zero;
 
     public override void Enter(Dictionary? msg = null)
     {
-        _frameCount = 0;
-        _inHitlag   = true;
+        _frameCount     = 0;
+        _inHitlag       = true;
+        _launchVelocity = Vector2.Zero;
 
         if (msg is not null)
         {
-            if (msg.TryGetValue("launch_velocity", out Variant v))
-                Character.CharacterVelocity = v.AsVector2();
+            // Store the launch velocity — don't apply it to the character yet.
+            // CharacterVelocity will be zeroed during hitlag; we restore it after.
+            if (msg.TryGetValue("launch_velocity",  out Variant v))  _launchVelocity = v.AsVector2();
+            if (msg.TryGetValue("hitlag_frames",    out Variant hl)) _hitlagFrames   = hl.AsInt32();
+            if (msg.TryGetValue("hitstun_frames",   out Variant hs)) _hitstunFrames  = hs.AsInt32();
+        }
 
-            if (msg.TryGetValue("hitlag_frames", out Variant hl))
-                _hitlagFrames = hl.AsInt32();
-
-            if (msg.TryGetValue("hitstun_frames", out Variant hs))
-                _hitstunFrames = hs.AsInt32();
+        // If there is no hitlag, commit the velocity immediately.
+        if (_hitlagFrames <= 0)
+        {
+            _inHitlag = false;
+            Character.CharacterVelocity = _launchVelocity;
         }
     }
 
@@ -45,31 +53,35 @@ public partial class HitstunState : State
     {
         _frameCount++;
 
-        // ── Hitlag phase: freeze in place ─────────────────────────────────────
+        // ── Phase 1: Hitlag ───────────────────────────────────────────────────
         if (_inHitlag)
         {
             if (_frameCount <= _hitlagFrames)
             {
-                // Zero velocity so neither character moves during the freeze.
+                // Freeze in place. Both attacker (managed by AttackState) and defender
+                // are stationary. Position reads for SDI would go here.
                 Character.CharacterVelocity = Vector2.Zero;
                 return;
             }
+
+            // Hitlag just finished — now commit the launch velocity and begin tumbling.
             _inHitlag   = false;
-            _frameCount = 0; // reset counter for hitstun phase
+            _frameCount = 0;
+            Character.CharacterVelocity = _launchVelocity;
         }
 
-        // ── Hitstun phase: fly with knockback, gravity still applies ──────────
+        // ── Phase 2: Hitstun ──────────────────────────────────────────────────
         if (_frameCount >= _hitstunFrames)
         {
-            // Hitstun expired — allow the player to act again.
             FSM.TransitionTo(Character.IsOnFloor() ? "IdleState" : "FallState");
             return;
         }
 
-        // Apply gravity during tumble so long-distance knockback has a natural arc.
+        // Gravity shapes the tumble arc — no friction during knockback.
         Character.CharacterVelocity = MovementComponent.ApplyGravity(
             Character.CharacterVelocity, Character.Data, isFastFalling: false, delta);
     }
 
-    // No input allowed during hitstun (SDI will be added here later as a special case).
+    // No input during hitstun. SDI (stick-shifting during hitlag for position escape)
+    // is the planned extension here.
 }

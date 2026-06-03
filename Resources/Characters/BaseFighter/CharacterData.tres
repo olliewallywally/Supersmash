@@ -1,0 +1,75 @@
+; Base Fighter — CharacterData resource.
+; Open in Godot and File > Save to let the engine assign proper UIDs.
+; All values are Ultimate-standard defaults tuned for a mid-weight generalist.
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/CharacterData.cs" id="Script_CharacterData"]
+
+[resource]
+script = ExtResource("Script_CharacterData")
+
+; ── Identity ──────────────────────────────────────────────────────────────────
+; Mid-weight (100). Heavier = more KB resistance. Typical range: 75 (floaty) to 135 (heavy).
+Weight = 100.0
+
+; ── Ground Movement ───────────────────────────────────────────────────────────
+WalkSpeed = 300.0
+RunSpeed = 600.0
+InitialDashSpeed = 800.0
+GroundFriction = 0.18
+TurnaroundFriction = 0.3
+
+; ── Dash & Dash-Dance ─────────────────────────────────────────────────────────
+; DashDanceWindowFrames matches InitialDashFrames: tightest legal dash-dance timing.
+InitialDashFrames = 12
+DashDanceWindowFrames = 12
+FoxtrotCooldownFrames = 2
+
+; ── Jumping ───────────────────────────────────────────────────────────────────
+; Universal 3-frame JumpSquat (Ultimate standard).
+; JumpMomentumTransfer = 0.85 → Melee-adjacent feel without full Melee momentum.
+FullHopVelocity = -1050.0
+ShortHopVelocity = -650.0
+AirJumpVelocity = -980.0
+MaxAirJumps = 1
+JumpSquatFrames = 3
+JumpMomentumTransfer = 0.85
+MaxHorizontalJumpSpeed = 700.0
+
+; ── Air Movement ──────────────────────────────────────────────────────────────
+AirSpeed = 420.0
+AirAcceleration = 0.07
+AirFriction = 0.02
+
+; ── Gravity & Fall ────────────────────────────────────────────────────────────
+; FastFallMultiplier × Gravity = fast-fall acceleration. Multiply by MaxFallSpeed
+; to feel how "snappy" the character is — higher values = more momentum-heavy.
+Gravity = 2600.0
+MaxFallSpeed = 1600.0
+FastFallMultiplier = 1.65
+FastFallMaxSpeed = 2800.0
+
+; ── Landing Lag ───────────────────────────────────────────────────────────────
+SoftLandingFrames = 2
+HelplessLandingFrames = 20
+LCancelMultiplier = 0.5
+
+; ── Ledge ─────────────────────────────────────────────────────────────────────
+LedgeGrabBoxOffset = Vector2(18, -8)
+LedgeGrabBoxSize = Vector2(24, 40)
+LedgeHangInvincibilityFrames = 30
+LedgeRegrabCooldownFrames = 30
+LedgeGetupFrames = 26
+
+; ── Hurtbox Sizing ────────────────────────────────────────────────────────────
+StandingHurtboxSize = Vector2(40, 90)
+CrouchHurtboxSize = Vector2(44, 52)
+
+; ── Shield ────────────────────────────────────────────────────────────────────
+ShieldMaxHealth = 50.0
+ShieldDecayRate = 0.28
+ShieldRegenRate = 0.2
+ShieldBreakStunFrames = 180
+
+; ── Combat ────────────────────────────────────────────────────────────────────
+AttackerHitlagFrames = 3

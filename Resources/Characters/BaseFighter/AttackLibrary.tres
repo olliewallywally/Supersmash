@@ -1,0 +1,133 @@
+; Base Fighter — AttackLibrary resource.
+; Open in Godot and File > Save to regenerate UIDs.
+;
+; Moveset:  Jab (frame 3) · NeutralAir · ForwardTilt · ForwardSmash
+;
+; Frame-data convention: StartupFrames = frames BEFORE the hitbox is live.
+; Hitbox goes live on frame (StartupFrames + 1).  e.g. StartupFrames=2 = frame-3 jab.
+;
+; Knockback tuning guide (all values at 0% → typical % for kills):
+;   Jab         : weak combo starter, should NOT kill below 200%
+;   NeutralAir  : mid-range confirm, kills ~160% off-stage
+;   ForwardTilt : grounded poke, kills ~140% near ledge
+;   ForwardSmash: kill move, kills ~110% at centre-stage
+;
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+
+; ── Jab ─────────────────────────────────────────────────────────────────────
+; 3% damage. Launches at 45°. Should combo into itself at 0–40%.
+; BKB=15 means it always connects but never sends far at low percent.
+[sub_resource type="Resource" id="HitboxData_Jab"]
+script = ExtResource("Script_HitboxData")
+Damage = 3.0
+BaseKnockback = 15.0
+KnockbackGrowth = 30.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 3
+HitstunFrames = 10
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_Jab"]
+script = ExtResource("Script_AttackData")
+AttackId = "Jab"
+IsAerial = false
+StartupFrames = 2
+ActiveFrames = 2
+RecoveryFrames = 10
+HitboxNodeName = "JabHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_Jab")])
+HitstunMultiplier = 1.0
+
+; ── NeutralAir ───────────────────────────────────────────────────────────────
+; 8% damage. Long active window (5 frames) makes it a reliable approach/combo tool.
+; 45° launch angle. KBG=70 starts killing off-stage around 100%.
+[sub_resource type="Resource" id="HitboxData_NeutralAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 8.0
+BaseKnockback = 20.0
+KnockbackGrowth = 70.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 6
+HitstunFrames = 18
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralAir"
+IsAerial = true
+StartupFrames = 4
+ActiveFrames = 5
+RecoveryFrames = 20
+HitboxNodeName = "NairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralAir")])
+HitstunMultiplier = 1.0
+
+; ── ForwardTilt ───────────────────────────────────────────────────────────────
+; 9% damage. Low 30° angle keeps the opponent grounded at mid-percent (combo/ledge tool).
+; Fast enough to punish (frame 8) but not a true OOS option.
+[sub_resource type="Resource" id="HitboxData_ForwardTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 9.0
+BaseKnockback = 35.0
+KnockbackGrowth = 90.0
+LaunchAngle = 30.0
+AngleFlipsWithFacing = true
+HitlagFrames = 6
+HitstunFrames = 22
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardTilt"
+IsAerial = false
+StartupFrames = 7
+ActiveFrames = 3
+RecoveryFrames = 14
+HitboxNodeName = "ForwardTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardTilt")])
+HitstunMultiplier = 1.0
+
+; ── ForwardSmash ─────────────────────────────────────────────────────────────
+; 18% damage. 14-frame startup: slow, committed, rewarding.
+; KBG=110 is a genuine kill threat at 100%+. HitstunMultiplier=1.05 gives
+; a slight frame-advantage bonus on hit (small edgeguard window).
+[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+script = ExtResource("Script_HitboxData")
+Damage = 18.0
+BaseKnockback = 40.0
+KnockbackGrowth = 110.0
+LaunchAngle = 40.0
+AngleFlipsWithFacing = true
+HitlagFrames = 10
+HitstunFrames = 35
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardSmash"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardSmash"
+IsAerial = false
+StartupFrames = 14
+ActiveFrames = 4
+RecoveryFrames = 28
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardSmash")])
+HitstunMultiplier = 1.05
+
+; ── Library root ─────────────────────────────────────────────────────────────
+[resource]
+script = ExtResource("Script_AttackLibrary")
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_ForwardSmash")])
