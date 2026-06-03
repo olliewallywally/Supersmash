@@ -76,6 +76,13 @@ public partial class InputHandler : Node
     /// Which local player this handler polls. Set before adding to scene tree.
     [Export] public int PlayerIndex { get; set; } = 0;
 
+    /// When true, SampleFrame() writes a fully-zeroed frame every tick without
+    /// querying Godot's Input singleton. Use this for AI characters, training
+    /// dummies, or replay playback — anything that should not read a physical device.
+    /// Avoids the "nonexistent InputMap action" spam that PlayerIndex alone causes
+    /// when p1_* actions are not registered in project.godot.
+    [Export] public bool IsAI { get; set; } = false;
+
     private readonly InputFrame[] _buffer = new InputFrame[BufferSize];
     private int _head = 0; // current write position in the ring
 
@@ -105,6 +112,15 @@ public partial class InputHandler : Node
     /// </summary>
     public void SampleFrame()
     {
+        // AI/dummy path: write a zero frame without touching Godot's Input singleton.
+        if (IsAI)
+        {
+            _head = (_head + 1) % BufferSize;
+            _buffer[_head] = new InputFrame { PhysicsFrame = CurrentTick };
+            _previousButtons = ButtonMask.None;
+            return;
+        }
+
         int tick = CurrentTick;
 
         ButtonMask current    = BuildButtonMask();
