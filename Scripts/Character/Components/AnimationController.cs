@@ -147,6 +147,16 @@ public partial class AnimationController : Node
             _animationPlayer.Queue(animName);
     }
 
+    /// Freeze (SpeedScale → 0) or unfreeze (SpeedScale → 1) the AnimationPlayer.
+    /// Called by HitstopManager (attacker) and HitstunState (defender) around hitlag.
+    /// SpeedScale=0 holds the current frame in place without stopping playback state,
+    /// so resuming at SpeedScale=1 continues from exactly the same frame.
+    public void SetPaused(bool paused)
+    {
+        if (_animationPlayer is null) return;
+        _animationPlayer.SpeedScale = paused ? 0f : 1f;
+    }
+
     // Helper so callers don't need a direct reference to the controller.
     private CharacterController? Character =>
         _character ??= GetParentOrNull<CharacterController>();

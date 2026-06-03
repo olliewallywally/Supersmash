@@ -44,6 +44,19 @@ public partial class AttackData : Resource
     /// <1 makes a "safe" poke. Applied on top of the hitbox's base hitstun.
     [Export] public float HitstunMultiplier { get; set; } = 1.0f;
 
+    [ExportGroup("Visuals")]
+    /// Optional node name of a WeaponTrail child of CharacterController.
+    /// Leave empty for attacks that have no trail (e.g. Jab).
+    [Export] public string TrailNodeName { get; set; } = "";
+
+    [ExportGroup("Projectile")]
+    /// Packed scene to instantiate at FirstActiveFrame. null = melee-only attack.
+    /// The root node of the scene must extend Projectile.
+    [Export] public PackedScene? ProjectileScene { get; set; }
+    /// Offset from the character's origin at which the projectile spawns.
+    /// X is automatically flipped by FacingDirection so it always spawns in front.
+    [Export] public Vector2 ProjectileSpawnOffset { get; set; } = new Vector2(48f, 0f);
+
     // ── Derived ────────────────────────────────────────────────────────────────
 
     public int TotalFrames => StartupFrames + ActiveFrames + RecoveryFrames;

@@ -30,16 +30,18 @@ public partial class AttackState : State
     /// Remains set even if the attack is not found in the library (for debug logging).
     public string CurrentAttackId { get; private set; } = string.Empty;
 
-    private AttackData? _attack;
-    private Hitbox?     _hitbox;
-    private int         _frame;
-    private bool        _hitboxLive;
+    private AttackData?  _attack;
+    private Hitbox?      _hitbox;
+    private WeaponTrail? _trail;
+    private int          _frame;
+    private bool         _hitboxLive;
 
     public override void Enter(Dictionary? msg = null)
     {
         _frame          = 0;
         _hitboxLive     = false;
         _hitbox         = null;
+        _trail          = null;
         _attack         = null;
         CurrentAttackId = string.Empty;
 
@@ -71,13 +73,18 @@ public partial class AttackState : State
                 GD.PushWarning($"[AttackState] Hitbox node '{_attack.HitboxNodeName}' not found on {Character.Name}.");
             }
         }
+
+        // Resolve optional weapon trail node.
+        if (!string.IsNullOrEmpty(_attack.TrailNodeName))
+            _trail = Character.GetNodeOrNull<WeaponTrail>(_attack.TrailNodeName);
     }
 
     public override void Exit()
     {
-        // Safety net: never leave a hitbox live across a state change.
+        // Safety net: never leave a hitbox or trail live across a state change.
         if (_hitboxLive) _hitbox?.Deactivate();
         _hitboxLive = false;
+        _trail?.Deactivate();
     }
 
     public override void PhysicsUpdate(double delta)
@@ -91,18 +98,31 @@ public partial class AttackState : State
 
         _frame++;
 
-        // First active frame → arm the hitbox.
-        if (_frame == _attack.FirstActiveFrame && !_hitboxLive && _hitbox is not null)
+        // First active frame → arm hitbox, activate trail, spawn projectile if any.
+        if (_frame == _attack.FirstActiveFrame)
         {
-            _hitbox.Activate();
-            _hitboxLive = true;
+            if (!_hitboxLive && _hitbox is not null)
+            {
+                _hitbox.Activate();
+                _hitboxLive = true;
+            }
+
+            _trail?.Activate();
+
+            if (_attack.ProjectileScene is not null)
+                SpawnProjectile();
         }
 
-        // First recovery frame → disarm the hitbox.
-        if (_frame == _attack.FirstRecoveryFrame && _hitboxLive && _hitbox is not null)
+        // First recovery frame → disarm hitbox and trail.
+        if (_frame == _attack.FirstRecoveryFrame)
         {
-            _hitbox.Deactivate();
-            _hitboxLive = false;
+            if (_hitboxLive && _hitbox is not null)
+            {
+                _hitbox.Deactivate();
+                _hitboxLive = false;
+            }
+
+            _trail?.Deactivate();
         }
 
         // Past the final recovery frame → return to neutral.
@@ -114,4 +134,27 @@ public partial class AttackState : State
 
     // Inputs are intentionally not handled mid-attack; buffered presses (jump, etc.)
     // fire naturally in the next state once recovery ends.
+
+    // ── Projectile spawning ───────────────────────────────────────────────────
+
+    private void SpawnProjectile()
+    {
+        var proj = _attack!.ProjectileScene!.Instantiate<Projectile>();
+
+        // Set runtime properties BEFORE AddChild so _Ready() sees correct values.
+        proj.DirectionX     = Character.FacingDirection;
+        proj.OwnerCharacter = Character;
+
+        // Add to the scene root so the projectile is independent of both fighters.
+        var scene = Character.GetTree().CurrentScene;
+        scene.AddChild(proj);
+
+        // Position AFTER AddChild (GlobalPosition requires the node to be in-tree).
+        // Flip X offset by FacingDirection so it always spawns in front of the attacker.
+        Vector2 offset = _attack.ProjectileSpawnOffset with
+        {
+            X = _attack.ProjectileSpawnOffset.X * Character.FacingDirection
+        };
+        proj.GlobalPosition = Character.GlobalPosition + offset;
+    }
 }

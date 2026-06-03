@@ -30,11 +30,13 @@ public partial class CharacterController : CharacterBody2D
 
     // ── Component references (resolved in _Ready) ─────────────────────────────
 
-    public CharacterStateMachine FSM       { get; private set; } = null!;
-    public InputHandler          Input     { get; private set; } = null!;
-    public MovementComponent     Movement  { get; private set; } = null!;
-    public CombatComponent       Combat    { get; private set; } = null!;
+    public CharacterStateMachine FSM              { get; private set; } = null!;
+    public InputHandler          Input            { get; private set; } = null!;
+    public MovementComponent     Movement         { get; private set; } = null!;
+    public CombatComponent       Combat           { get; private set; } = null!;
     public Hurtbox               HurtboxContainer { get; private set; } = null!;
+    /// Null until _Ready runs. Always check before calling SetPaused / Play.
+    public AnimationController?  AnimController   { get; private set; }
 
     // ── Shared physics state (read/written by states & components) ────────────
 
@@ -57,6 +59,11 @@ public partial class CharacterController : CharacterBody2D
     /// Set by RespawnState on touchdown; counted down in _PhysicsProcess.
     public int TemporaryInvincibilityFrames { get; set; } = 0;
 
+    /// True while HitstopManager has frozen this character.
+    /// CharacterController._PhysicsProcess skips all FSM logic while this is set,
+    /// effectively pausing the attack frame counter on the hit frame.
+    public bool IsHitstopFrozen { get; private set; } = false;
+
     // ── Signals ───────────────────────────────────────────────────────────────
 
     /// Emitted when the character crosses a blast zone. Consumed by RespawnManager.
@@ -65,15 +72,23 @@ public partial class CharacterController : CharacterBody2D
     /// Called by BlastZone. Emits the Died signal.
     public void Die() => EmitSignal(SignalName.Died);
 
+    /// Called exclusively by HitstopManager. Freezes/thaws physics and animation.
+    internal void SetHitstopFrozen(bool frozen)
+    {
+        IsHitstopFrozen = frozen;
+        AnimController?.SetPaused(frozen);
+    }
+
     // ── Godot lifecycle ───────────────────────────────────────────────────────
 
     public override void _Ready()
     {
-        FSM      = GetNode<CharacterStateMachine>("StateMachine");
-        Input    = GetNode<InputHandler>("InputHandler");
-        Movement = GetNode<MovementComponent>("MovementComponent");
-        Combat   = GetNode<CombatComponent>("CombatComponent");
+        FSM              = GetNode<CharacterStateMachine>("StateMachine");
+        Input            = GetNode<InputHandler>("InputHandler");
+        Movement         = GetNode<MovementComponent>("MovementComponent");
+        Combat           = GetNode<CombatComponent>("CombatComponent");
         HurtboxContainer = GetNode<Hurtbox>("HurtboxContainer");
+        AnimController   = GetNodeOrNull<AnimationController>("AnimationController");
 
         Input.PlayerIndex    = PlayerIndex;
         AirJumpsRemaining    = Data.MaxAirJumps;
@@ -96,6 +111,20 @@ public partial class CharacterController : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        // ── Hitstop: attacker is frozen in place for hitlagFrames ticks ────
+        if (IsHitstopFrozen)
+        {
+            // Sample input so the ring buffer doesn't stall (buffered presses
+            // recorded during hitstop will still fire in the next state).
+            Input.SampleFrame();
+
+            Velocity = Vector2.Zero;
+            MoveAndSlide();
+            CharacterVelocity = Velocity;
+            TickInvincibility();
+            return;
+        }
+
         // ── Tick order is critical ──────────────────────────────────────────
         // 1. Sample raw input first so states see fresh data this tick.
         Input.SampleFrame();
@@ -115,12 +144,15 @@ public partial class CharacterController : CharacterBody2D
         CharacterVelocity = Velocity;
 
         // 6. Tick down post-respawn invincibility and lift it when the window expires.
-        if (TemporaryInvincibilityFrames > 0)
-        {
-            TemporaryInvincibilityFrames--;
-            if (TemporaryInvincibilityFrames == 0)
-                HurtboxContainer.CurrentInvincibility = Hurtbox.InvincibilityType.None;
-        }
+        TickInvincibility();
+    }
+
+    private void TickInvincibility()
+    {
+        if (TemporaryInvincibilityFrames <= 0) return;
+        TemporaryInvincibilityFrames--;
+        if (TemporaryInvincibilityFrames == 0)
+            HurtboxContainer.CurrentInvincibility = Hurtbox.InvincibilityType.None;
     }
 
     // ── Hit reception (called by attacker's Hitbox signal) ───────────────────
@@ -154,5 +186,10 @@ public partial class CharacterController : CharacterBody2D
             { "hitstun_frames",   hitstunFrames   },
             { "hitlag_frames",    hitboxData.HitlagFrames },
         });
+
+        // Freeze the ATTACKER for the same hitlag duration.
+        // The defender's freeze is managed internally by HitstunState (animation)
+        // and the hitlag phase of HitstunState.PhysicsUpdate() (velocity).
+        HitstopManager.RequestFreeze(attacker, hitboxData.HitlagFrames);
     }
 }

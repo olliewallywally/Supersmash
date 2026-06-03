@@ -46,7 +46,12 @@ public partial class HitstunState : State
         {
             _inHitlag = false;
             Character.CharacterVelocity = _launchVelocity;
+            return;
         }
+
+        // Freeze the defender's animation for the duration of hitlag.
+        // Unfreeze happens below when the hitlag phase ends.
+        Character.AnimController?.SetPaused(true);
     }
 
     public override void PhysicsUpdate(double delta)
@@ -64,9 +69,10 @@ public partial class HitstunState : State
                 return;
             }
 
-            // Hitlag just finished — now commit the launch velocity and begin tumbling.
+            // Hitlag just finished — unfreeze animation and commit the launch velocity.
             _inHitlag   = false;
             _frameCount = 0;
+            Character.AnimController?.SetPaused(false);
             Character.CharacterVelocity = _launchVelocity;
         }
 

@@ -25,6 +25,10 @@ public partial class Hitbox : Area2D
     /// Used to attribute the hit and to prevent self-damage.
     public CharacterController? AttackerRef { get; set; }
 
+    /// Assign a HitSpark.tscn packed scene to display a spark at the contact point.
+    /// Leave null to suppress the visual (e.g. during early development).
+    [Export] public PackedScene? HitSparkScene { get; set; }
+
     /// Targets already hit during the current activation window.
     private readonly HashSet<ulong> _alreadyHit = new();
 
@@ -67,5 +71,25 @@ public partial class Hitbox : Area2D
 
         target.ReceiveHit(AttackerRef ?? target, Data, HitstunMultiplier);
         EmitSignal(SignalName.HitConfirmed, target, Data);
+
+        SpawnHitSpark(area.GlobalPosition);
+    }
+
+    private void SpawnHitSpark(Vector2 hurtboxPosition)
+    {
+        if (HitSparkScene is null) return;
+
+        // Midpoint between hitbox centre and hurtbox centre approximates contact.
+        Vector2 contactPos = (GlobalPosition + hurtboxPosition) * 0.5f;
+
+        // Orient the spark so directional art (slashes, etc.) faces from attacker → defender.
+        float rotation = (hurtboxPosition - GlobalPosition).Angle();
+
+        var spark = HitSparkScene.Instantiate<Node2D>();
+        spark.GlobalPosition = contactPos;
+        spark.Rotation       = rotation;
+
+        // Parent to the scene root so the spark is independent of both fighters.
+        GetTree().CurrentScene.AddChild(spark);
     }
 }
