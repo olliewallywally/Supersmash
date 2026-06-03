@@ -4,40 +4,46 @@ using Godot.Collections;
 namespace Supersmash;
 
 /// <summary>
-/// Handles two sub-phases in one state:
-///   1. JumpSquat — the ground anticipation frames before leaving the floor.
-///      Determined by CharacterData.JumpSquatFrames (typically 3).
-///   2. Rising — once airborne with jump velocity applied.
+/// The rising arc after JumpSquatState has applied the launch velocity.
 ///
-/// Short hop vs. full hop is determined by whether the jump button is still
-/// held at the end of JumpSquat (held = full hop, released = short hop).
-/// This matches how Smash Bros implements it for a natural, skill-expressive feel.
+/// This state's only jobs are:
+///   • Apply gravity on the way up.
+///   • Allow aerial drift input.
+///   • Allow air jumps (double-jump, triple-jump, etc.).
+///   • Hand off to FallState once the arc peaks (velocity.Y flips positive).
+///
+/// Short-hop vs. full-hop detection and momentum carry have already happened
+/// in JumpSquatState — by the time we get here the velocity is set.
 /// </summary>
 public partial class JumpState : State
 {
-    private int _jumpSquatTimer = 0;
-    private bool _jumpButtonHeld = false;
-
     public override void Enter(Dictionary? msg = null)
     {
-        _jumpSquatTimer  = 0;
-        _jumpButtonHeld  = true;
+        // Velocity already applied by JumpSquatState. Nothing to set up.
         Character.StateFrameCounter = 0;
     }
 
     public override void HandleInput(InputHandler input)
     {
-        // Track whether the player releases jump during JumpSquat for short-hop detection.
-        if (!input.IsHeld(GameAction.Jump))
-            _jumpButtonHeld = false;
-
-        // Air jump when airborne (after JumpSquat resolves).
-        if (_jumpSquatTimer >= Character.Data.JumpSquatFrames &&
-            input.IsBuffered(GameAction.Jump) &&
-            Character.AirJumpsRemaining > 0)
+        // Air jump — instantaneous, no JumpSquat window.
+        if (input.IsBuffered(GameAction.Jump) && Character.AirJumpsRemaining > 0)
         {
             input.Consume(GameAction.Jump);
-            ApplyAirJump();
+            Character.AirJumpsRemaining--;
+            Character.IsFastFalling = false;
+
+            // Preserve horizontal momentum; only override the vertical component.
+            Character.CharacterVelocity = new Vector2(
+                Character.CharacterVelocity.X,
+                Character.Data.AirJumpVelocity);
+
+            // No state change — we stay in JumpState on the new rising arc.
+        }
+
+        if (input.IsBuffered(GameAction.Attack))
+        {
+            input.Consume(GameAction.Attack);
+            FSM.TransitionTo("AttackState", "attack_type", "nair");
         }
     }
 
@@ -45,29 +51,16 @@ public partial class JumpState : State
     {
         Character.StateFrameCounter++;
 
-        // ── JumpSquat phase ───────────────────────────────────────────────────
-        if (_jumpSquatTimer < Character.Data.JumpSquatFrames)
-        {
-            _jumpSquatTimer++;
-
-            // Stay grounded during JumpSquat — keep Y velocity flat.
-            Character.CharacterVelocity = new Vector2(Character.CharacterVelocity.X, 0f);
-
-            if (_jumpSquatTimer == Character.Data.JumpSquatFrames)
-                LaunchFromGround();
-
-            return;
-        }
-
-        // ── Airborne phase ────────────────────────────────────────────────────
+        // Extremely rare edge case: land on the same tick as launch (e.g., jumping into ceiling).
         if (Character.IsOnFloor())
         {
+            Character.AirJumpsRemaining = Character.Data.MaxAirJumps;
             FSM.TransitionTo("IdleState");
             return;
         }
 
-        // Transition to Fall once vertical velocity turns positive (arc peak passed).
-        if (Character.CharacterVelocity.Y > 0)
+        // Arc peak — velocity.Y crosses zero, gravity wins from here.
+        if (Character.CharacterVelocity.Y >= 0f)
         {
             FSM.TransitionTo("FallState");
             return;
@@ -78,27 +71,5 @@ public partial class JumpState : State
 
         Character.CharacterVelocity = MovementComponent.ApplyAirDrift(
             Character.CharacterVelocity, Character.Input.MoveStick.X, Character.Data);
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    private void LaunchFromGround()
-    {
-        float jumpVelocity = _jumpButtonHeld
-            ? Character.Data.FullHopVelocity
-            : Character.Data.ShortHopVelocity;
-
-        Character.CharacterVelocity = new Vector2(
-            Character.CharacterVelocity.X,
-            jumpVelocity);
-    }
-
-    private void ApplyAirJump()
-    {
-        Character.AirJumpsRemaining--;
-        Character.IsFastFalling = false;
-        Character.CharacterVelocity = new Vector2(
-            Character.CharacterVelocity.X,
-            Character.Data.AirJumpVelocity);
     }
 }

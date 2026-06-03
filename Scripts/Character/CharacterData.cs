@@ -29,7 +29,7 @@ public partial class CharacterData : Resource
     [Export] public int   InitialDashFrames   { get; set; } = 12;
     /// Window (frames) from the start of a dash during which flicking the stick the
     /// other way produces a fresh dash instead of a turnaround — enables dash-dancing.
-    [Export] public int   DashDanceWindowFrames { get; set; } = 11;
+    [Export] public int   DashDanceWindowFrames { get; set; } = 12;
     /// Frames you must wait between foxtrots (re-dashing in the same direction).
     [Export] public int   FoxtrotCooldownFrames { get; set; } = 2;
 
@@ -65,7 +65,7 @@ public partial class CharacterData : Resource
     /// Frames of recovery when touching down from a neutral fall (no attack).
     [Export] public int SoftLandingFrames    { get; set; } = 2;
     /// Frames of recovery when landing out of Helpless/special-fall. Deliberately punishing.
-    [Export] public int HelplessLandingFrames { get; set; } = 22;
+    [Export] public int HelplessLandingFrames { get; set; } = 20;
     /// Multiplier applied to an aerial's landing lag when L-cancelled (0–1). 0.5 = halved.
     [Export] public float LCancelMultiplier   { get; set; } = 0.5f;
 
