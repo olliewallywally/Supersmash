@@ -1,32 +1,32 @@
-; Rushdown — AttackLibrary.
-; Fast startup, low knockback. Combo-first kit — strings together 4-5 hits
-; to build percent, then converts with ForwardSmash at kill percent.
+; Rushdown (Fox) — AttackLibrary.
+; Frame data sourced from Super Smash Bros. Melee community documentation.
+; Kit philosophy: three low-commitment pokes build percent; UpTilt juggles;
+; BackAir kills; ForwardSmash confirms at kill percent.
 ;
-; Balance philosophy:
-;   Jab        : frame 2 — literally the fastest possible jab. Links into itself
-;                3× at low percent (jab lock risk). Forces immediate shielding.
-;   NeutralAir : fast, follows from short-hop. Combo filler.
-;   ForwardTilt: frame 6 poke. Low recovery; safe on shield at full spacing.
-;   ForwardSmash: frame 11 — fastest smash attack. Less raw power than Bruiser's
-;                but confirms from conditioning opponents to shield jabs.
-[gd_resource type="Resource" script_class="AttackLibrary" load_steps=12 format=3]
+;   Jab        : frame 2 — fastest possible. Sets up jab-lock at low %.
+;   NeutralAir : frame 3 — fast aerial, short-hop auto-cancel.
+;   ForwardTilt: frame 8 — low angle (30°) keeps opponent grounded for follow-up dash.
+;   UpTilt     : frame 7 — anti-air. High angle (85°) juggles. Combo starter above 0%.
+;   BackAir    : frame 6 — kill aerial. 42° diagonal, high BKB. Confirms from NAir.
+;   ForwardSmash: frame 11 — fastest smash. Confirms through conditioning; kills ~110%.
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
 
-; ── Jab ─────────────────────────────────────────────────────────────────────
-; Frame 2 (StartupFrames=1). Minimal damage but forces instant reactions.
-; Low BKB intentional — stays close for follow-ups. Does NOT kill.
+; ── Jab ──────────────────────────────────────────────────────────────────────
+; Melee Fox Jab1: frame 2 active, FAF 17. 2% damage, low BKB.
+; Low BKB intentional — stays close for jab 2/3 follow-up.
 [sub_resource type="Resource" id="HitboxData_Jab"]
 script = ExtResource("Script_HitboxData")
-Damage = 2.0
-BaseKnockback = 10.0
-KnockbackGrowth = 15.0
+Damage = 2.5
+BaseKnockback = 12.0
+KnockbackGrowth = 18.0
 LaunchAngle = 50.0
 AngleFlipsWithFacing = true
 HitlagFrames = 2
-HitstunFrames = 8
+HitstunFrames = 7
 Type = 0
 IgnoresDI = false
 HitboxId = 0
@@ -37,23 +37,23 @@ AttackId = "Jab"
 IsAerial = false
 StartupFrames = 1
 ActiveFrames = 2
-RecoveryFrames = 8
+RecoveryFrames = 14
 HitboxNodeName = "JabHitbox"
 Hitboxes = Array[Resource]([SubResource("HitboxData_Jab")])
 HitstunMultiplier = 0.9
 
 ; ── NeutralAir ───────────────────────────────────────────────────────────────
-; Frame 4. 4-frame active window. Short-hop auto-cancel friendly.
-; Converts to ForwardSmash around 80% via DI read.
+; Melee Fox NAir: frame 3 clean hit, FAF 33. Short-hop auto-cancel friendly.
+; At 80%+ converts to ForwardSmash via DI read.
 [sub_resource type="Resource" id="HitboxData_NeutralAir"]
 script = ExtResource("Script_HitboxData")
-Damage = 6.0
-BaseKnockback = 15.0
-KnockbackGrowth = 65.0
-LaunchAngle = 42.0
+Damage = 8.0
+BaseKnockback = 20.0
+KnockbackGrowth = 80.0
+LaunchAngle = 48.0
 AngleFlipsWithFacing = true
 HitlagFrames = 4
-HitstunFrames = 14
+HitstunFrames = 16
 Type = 0
 IgnoresDI = false
 HitboxId = 0
@@ -62,21 +62,22 @@ HitboxId = 0
 script = ExtResource("Script_AttackData")
 AttackId = "NeutralAir"
 IsAerial = true
-StartupFrames = 3
-ActiveFrames = 4
-RecoveryFrames = 14
+StartupFrames = 2
+ActiveFrames = 3
+RecoveryFrames = 16
 HitboxNodeName = "NairHitbox"
 Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralAir")])
 HitstunMultiplier = 1.0
 
 ; ── ForwardTilt ───────────────────────────────────────────────────────────────
-; Frame 6. Safe poke. 28° angle keeps opponent grounded for follow-up dash.
+; Melee Fox FTilt: frame 8, FAF 26. Low angle (30°) keeps opponent grounded.
+; Primary confirm into ForwardSmash at higher percent.
 [sub_resource type="Resource" id="HitboxData_ForwardTilt"]
 script = ExtResource("Script_HitboxData")
-Damage = 7.0
+Damage = 9.0
 BaseKnockback = 20.0
-KnockbackGrowth = 75.0
-LaunchAngle = 28.0
+KnockbackGrowth = 80.0
+LaunchAngle = 30.0
 AngleFlipsWithFacing = true
 HitlagFrames = 5
 HitstunFrames = 16
@@ -88,20 +89,76 @@ HitboxId = 0
 script = ExtResource("Script_AttackData")
 AttackId = "ForwardTilt"
 IsAerial = false
-StartupFrames = 5
+StartupFrames = 7
 ActiveFrames = 2
-RecoveryFrames = 10
+RecoveryFrames = 17
 HitboxNodeName = "ForwardTiltHitbox"
 Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardTilt")])
 HitstunMultiplier = 1.0
 
-; ── ForwardSmash ─────────────────────────────────────────────────────────────
-; Frame 11 — fastest smash in the roster. KBG=95 kills around 115-120% mid-stage.
-; Less raw power than Bruiser, but confirmed through conditioning + speed.
-[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+; ── UpTilt ────────────────────────────────────────────────────────────────────
+; Melee Fox UTilt: frame 7, 5-frame active, FAF 28. Anti-air juggle tool.
+; High angle (85°) sends straight up — links into UpTilt again at low/mid %,
+; then into UpSmash or BackAir at kill percent.
+[sub_resource type="Resource" id="HitboxData_UpTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 5.0
+BaseKnockback = 40.0
+KnockbackGrowth = 100.0
+LaunchAngle = 85.0
+AngleFlipsWithFacing = false
+HitlagFrames = 4
+HitstunFrames = 16
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_UpTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "UpTilt"
+IsAerial = false
+StartupFrames = 6
+ActiveFrames = 5
+RecoveryFrames = 17
+HitboxNodeName = "UpTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_UpTilt")])
+HitstunMultiplier = 1.0
+
+; ── BackAir ───────────────────────────────────────────────────────────────────
+; Melee Fox BAir: frame 6, 3-frame active, FAF 32. Kill aerial.
+; 42° angle with high BKB confirms from NAir/platform reads at 90%+.
+; Aerial-only (IsAerial=true) — cannot use this on the ground.
+[sub_resource type="Resource" id="HitboxData_BackAir"]
 script = ExtResource("Script_HitboxData")
 Damage = 14.0
-BaseKnockback = 32.0
+BaseKnockback = 22.0
+KnockbackGrowth = 76.0
+LaunchAngle = 42.0
+AngleFlipsWithFacing = true
+HitlagFrames = 7
+HitstunFrames = 26
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_BackAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "BackAir"
+IsAerial = true
+StartupFrames = 5
+ActiveFrames = 3
+RecoveryFrames = 24
+HitboxNodeName = "BackAirHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_BackAir")])
+HitstunMultiplier = 1.0
+
+; ── ForwardSmash ─────────────────────────────────────────────────────────────
+; Melee Fox FSmash: frame 11, FAF 46. BKB=22, KBG=95 kills ~110% mid-stage.
+; Fastest smash in the roster. Confirmed through tilt-conditioning.
+[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+script = ExtResource("Script_HitboxData")
+Damage = 16.0
+BaseKnockback = 22.0
 KnockbackGrowth = 95.0
 LaunchAngle = 42.0
 AngleFlipsWithFacing = true
@@ -117,11 +174,11 @@ AttackId = "ForwardSmash"
 IsAerial = false
 StartupFrames = 10
 ActiveFrames = 3
-RecoveryFrames = 22
+RecoveryFrames = 33
 HitboxNodeName = "ForwardSmashHitbox"
 Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardSmash")])
 HitstunMultiplier = 1.05
 
 [resource]
 script = ExtResource("Script_AttackLibrary")
-Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_ForwardSmash")])
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_BackAir"), SubResource("AttackData_ForwardSmash")])

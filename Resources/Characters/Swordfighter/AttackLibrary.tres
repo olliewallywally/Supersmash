@@ -1,0 +1,235 @@
+; Swordfighter (Marth) — AttackLibrary.
+; Frame data sourced from Super Smash Bros. Ultimate (Kurogane Hammer database)
+; and Melee community documentation. Marth is the definitive spacing character.
+;
+; TIPPER MECHANIC
+;   ForwardTilt and ForwardSmash each have TWO hitboxes in their Hitboxes array:
+;     Hitboxes[0] = tipper   (sword TIP  — high damage, high knockback, KILLS)
+;     Hitboxes[1] = sourspot (sword BASE — low damage, low knockback, combo only)
+;   Scene setup: add two Area2D hitbox nodes per tipped move.
+;     ForwardTiltTipper  — position at sword tip (furthest from character)
+;     ForwardTiltBase    — position along sword length (closer to character)
+;   The tipper (HitboxNodeName) has PRIORITY: AttackState calls SuppressTarget()
+;   on the sourspot if the tipper connects, preventing double-hits.
+;
+; Kit philosophy:
+;   Jab1/2  : fast, low-commitment. Resets to neutral or links into tilt.
+;   ForwardTilt: frame 8 poke. Tipper combos at low %, sourspot is safe-on-shield.
+;   UpTilt   : frame 6 anti-air. Juggles into re-tilt or ForwardAir strings.
+;   ForwardSmash: frame 10 tipper = kill move; sourspot = combo starter below 80%.
+;   NeutralAir: long-lasting aerial. Covers landing and platform pressure.
+;   ForwardAir: frame 6. Forward air is the primary combo aerial (Dancing Blade idea).
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=22 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+
+; ── Jab 1 ─────────────────────────────────────────────────────────────────────
+; Ultimate Marth Jab1: startup f5, FAF 26. Weak but confirms into Jab2.
+[sub_resource type="Resource" id="HitboxData_Jab1"]
+script = ExtResource("Script_HitboxData")
+Damage = 4.0
+BaseKnockback = 18.0
+KnockbackGrowth = 40.0
+LaunchAngle = 60.0
+AngleFlipsWithFacing = true
+HitlagFrames = 3
+HitstunFrames = 10
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_Jab1"]
+script = ExtResource("Script_AttackData")
+AttackId = "Jab"
+IsAerial = false
+StartupFrames = 4
+ActiveFrames = 2
+RecoveryFrames = 20
+HitboxNodeName = "JabHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_Jab1")])
+HitstunMultiplier = 0.9
+
+; ── ForwardTilt — TIPPER ──────────────────────────────────────────────────────
+; Ultimate Marth FTilt: startup f8, FAF 34. Two hitbox regions.
+;
+; TIPPER (sword tip) — high knockback, combo tool at low %, poke at mid %.
+;   BKB=25, KBG=88: sends at 45° → can string into ForwardAir below ~60%.
+;
+; SOURSPOT (sword base) — low knockback. Safe poke, forces shield/bad option.
+;   BKB=12, KBG=72: low enough that opponent stays grounded for follow-up dash.
+;
+; Scene setup: ForwardTiltTipper at sword tip, ForwardTiltBase along sword body.
+[sub_resource type="Resource" id="HitboxData_FTilt_Tip"]
+script = ExtResource("Script_HitboxData")
+Damage = 12.0
+BaseKnockback = 25.0
+KnockbackGrowth = 88.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 6
+HitstunFrames = 22
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="HitboxData_FTilt_Base"]
+script = ExtResource("Script_HitboxData")
+Damage = 9.0
+BaseKnockback = 12.0
+KnockbackGrowth = 72.0
+LaunchAngle = 42.0
+AngleFlipsWithFacing = true
+HitlagFrames = 5
+HitstunFrames = 16
+Type = 0
+IgnoresDI = false
+HitboxId = 1
+
+[sub_resource type="Resource" id="AttackData_ForwardTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardTilt"
+IsAerial = false
+StartupFrames = 7
+ActiveFrames = 4
+RecoveryFrames = 23
+HitboxNodeName = "ForwardTiltTipper"
+HitboxNodeName2 = "ForwardTiltBase"
+Hitboxes = Array[Resource]([SubResource("HitboxData_FTilt_Tip"), SubResource("HitboxData_FTilt_Base")])
+HitstunMultiplier = 1.0
+
+; ── UpTilt ────────────────────────────────────────────────────────────────────
+; Ultimate Marth UTilt: startup f6, FAF 34. Anti-air, juggle starter.
+; 82° angle sends nearly straight up — juggle confirms at any %.
+[sub_resource type="Resource" id="HitboxData_UpTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 7.0
+BaseKnockback = 30.0
+KnockbackGrowth = 100.0
+LaunchAngle = 82.0
+AngleFlipsWithFacing = false
+HitlagFrames = 5
+HitstunFrames = 18
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_UpTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "UpTilt"
+IsAerial = false
+StartupFrames = 5
+ActiveFrames = 4
+RecoveryFrames = 25
+HitboxNodeName = "UpTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_UpTilt")])
+HitstunMultiplier = 1.0
+
+; ── ForwardSmash — TIPPER ─────────────────────────────────────────────────────
+; Ultimate Marth FSmash: startup f10, FAF 52. Signature kill move.
+;
+; TIPPER (sword tip) — THE kill confirm. High BKB + KBG kills ~100% mid-stage.
+;   BKB=36, KBG=80: the reward for spacing out the opponent to max range.
+;
+; SOURSPOT (sword base) — combo tool below 80%. Won't kill until ~150%.
+;   BKB=22, KBG=75: low enough to combo into at mid-screen.
+;
+; Scene setup: ForwardSmashTipper at sword tip, ForwardSmashBase along sword body.
+[sub_resource type="Resource" id="HitboxData_FSmash_Tip"]
+script = ExtResource("Script_HitboxData")
+Damage = 18.0
+BaseKnockback = 36.0
+KnockbackGrowth = 80.0
+LaunchAngle = 42.0
+AngleFlipsWithFacing = true
+HitlagFrames = 10
+HitstunFrames = 34
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="HitboxData_FSmash_Base"]
+script = ExtResource("Script_HitboxData")
+Damage = 13.0
+BaseKnockback = 22.0
+KnockbackGrowth = 75.0
+LaunchAngle = 40.0
+AngleFlipsWithFacing = true
+HitlagFrames = 8
+HitstunFrames = 24
+Type = 0
+IgnoresDI = false
+HitboxId = 1
+
+[sub_resource type="Resource" id="AttackData_ForwardSmash"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardSmash"
+IsAerial = false
+StartupFrames = 9
+ActiveFrames = 4
+RecoveryFrames = 39
+HitboxNodeName = "ForwardSmashTipper"
+HitboxNodeName2 = "ForwardSmashBase"
+Hitboxes = Array[Resource]([SubResource("HitboxData_FSmash_Tip"), SubResource("HitboxData_FSmash_Base")])
+HitstunMultiplier = 1.05
+
+; ── NeutralAir ────────────────────────────────────────────────────────────────
+; Ultimate Marth NAir: startup f6, 15-frame active window, FAF 50.
+; Long active window pressures platforms and covers landing options.
+; Hits at 45° — can combo into ForwardTilt tipper below 40%.
+[sub_resource type="Resource" id="HitboxData_NeutralAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 7.0
+BaseKnockback = 20.0
+KnockbackGrowth = 78.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 5
+HitstunFrames = 16
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralAir"
+IsAerial = true
+StartupFrames = 5
+ActiveFrames = 15
+RecoveryFrames = 30
+HitboxNodeName = "NairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralAir")])
+HitstunMultiplier = 1.0
+
+; ── ForwardAir ────────────────────────────────────────────────────────────────
+; Ultimate Marth FAir: startup f6, FAF 38. Primary combo aerial.
+; 50° angle — combo into itself or into another ForwardTilt below 80%.
+; Kill option off-stage at 130%+ with tipper-like spacing in the air.
+[sub_resource type="Resource" id="HitboxData_ForwardAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 10.0
+BaseKnockback = 26.0
+KnockbackGrowth = 82.0
+LaunchAngle = 50.0
+AngleFlipsWithFacing = true
+HitlagFrames = 6
+HitstunFrames = 20
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardAir"
+IsAerial = true
+StartupFrames = 5
+ActiveFrames = 3
+RecoveryFrames = 30
+HitboxNodeName = "FairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardAir")])
+HitstunMultiplier = 1.0
+
+[resource]
+script = ExtResource("Script_AttackLibrary")
+Attacks = Array[Resource]([SubResource("AttackData_Jab1"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardAir")])

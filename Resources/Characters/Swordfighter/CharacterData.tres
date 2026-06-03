@@ -1,14 +1,15 @@
-; Rushdown — Fox archetype (Melee-accurate tuning).
+; Swordfighter — Marth archetype (Melee-accurate tuning).
 ; Physics source: meleelight (MIT © Will Blackett) — github.com/schmooblidon/meleelight
-; Raw meleelight Fox stats: weight=75, gravity=0.23 u/f², terminalV=2.8 u/f,
-;   fastFall=3.4 u/f, dashInit=2.02 u/f, dashMax=2.2 u/f, walkMax=1.6 u/f,
-;   jumpSquat=3 f. Values scaled to px/s preserving Fox/Marth gravity ratio (2.71×).
+; Raw meleelight Marth stats: weight=87, gravity=0.085 u/f² (0.37× Fox's 0.23),
+;   terminalV≈1.8 u/f, dashMax=1.8 u/f, walkMax=1.6 u/f, jumpSquat=4 f.
+; Fox/Marth gravity ratio = 2.71×. Marth gravity = Rushdown 3500 / 2.71 = 1292 → 1300.
 ;
 ; Design intent:
-;   Lightest fighter (77). Heaviest gravity in the roster. Fastest run speed.
-;   Dies early from knockback but controls neutral through speed and dash-dance.
-;   Fox identity: heavy fall speed means short windows for being juggled;
-;   high run speed enables immediate punish; low weight = high-risk, high-reward.
+;   Mid-heavy (87). Lowest gravity in the roster — most float-y feel.
+;   Long-reach sword creates a SPACING game entirely unlike Rushdown's rushdown.
+;   TIPPER MECHANIC: ForwardTilt and ForwardSmash have a sweetspot (sword tip,
+;   high knockback) and a sourspot (sword base, low knockback). Reward correct spacing.
+;   Survives longer than Rushdown (87 vs 77 weight) but is punished for bad spacing.
 [gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/CharacterData.cs" id="Script_CharacterData"]
@@ -17,52 +18,52 @@
 script = ExtResource("Script_CharacterData")
 
 ; ── Identity ──────────────────────────────────────────────────────────────────
-; Melee Fox = 75 weight. Reduced from 82 → 77 to match the archetype more closely.
-; Formula denominator (200/(77+100)) = 1.13. Takes ~13% MORE KB than mid-weight.
-Weight = 77.0
+; Melee Marth = 87 weight. Mid-heavy — survives past 140% with good DI.
+; Formula denominator (200/(87+100)) = 1.07. Takes ~7% MORE KB than mid-weight.
+Weight = 87.0
 
 ; ── Ground Movement ───────────────────────────────────────────────────────────
-; meleelight: walkMax=1.6, dashMax=2.2 u/f. Scale preserves Fox/Marth ratio.
+; meleelight: walkMax=1.6 u/f (same as Fox), dashMax=1.8 u/f (18% slower than Fox).
 WalkSpeed = 580.0
-RunSpeed = 790.0
-; Dash burst close to run (meleelight dashInit=2.02 ≈ dashMax=2.2).
-InitialDashSpeed = 980.0
-; High traction = snappy stops. Critical for tight dash-dancing.
-GroundFriction = 0.24
-TurnaroundFriction = 0.38
+RunSpeed = 650.0
+InitialDashSpeed = 760.0
+; Slightly less traction than Rushdown — more slide on stop, but not Bruiser-slow.
+GroundFriction = 0.18
+TurnaroundFriction = 0.30
 
 ; ── Dash & Dash-Dance ─────────────────────────────────────────────────────────
-; meleelight: dash phase frames 11–21 (11-frame initial dash).
-InitialDashFrames = 11
-; Wider reversal window — Rushdown can dash-dance earlier than most characters.
-DashDanceWindowFrames = 14
-FoxtrotCooldownFrames = 1
+; meleelight: dash frames 15–27 (15-frame initial dash, longer than Fox's 11).
+InitialDashFrames = 15
+; Narrower dash-dance window than Rushdown — Swordfighter spaces, doesn't dance.
+DashDanceWindowFrames = 12
+FoxtrotCooldownFrames = 2
 
 ; ── Jumping ───────────────────────────────────────────────────────────────────
-; meleelight jumpSquat = 3 frames. Fastest in the roster.
-JumpSquatFrames = 3
-; Fox's high short hop + heavy gravity creates the iconic short-hop aerial game.
-FullHopVelocity = -1130.0
-ShortHopVelocity = -720.0
-AirJumpVelocity = -1060.0
+; meleelight: jumpSquat=4. One extra frame vs Fox — subtle but readable timing diff.
+JumpSquatFrames = 4
+FullHopVelocity = -1020.0
+ShortHopVelocity = -640.0
+AirJumpVelocity = -980.0
 MaxAirJumps = 1
-; Full Melee-style momentum transfer — a max-speed dash-jump carries full velocity.
-JumpMomentumTransfer = 1.0
-MaxHorizontalJumpSpeed = 720.0
+; Marth has good momentum transfer — dash-jump is part of his spacing toolkit.
+JumpMomentumTransfer = 0.90
+MaxHorizontalJumpSpeed = 650.0
 
 ; ── Air Movement ──────────────────────────────────────────────────────────────
-AirSpeed = 490.0
-AirAcceleration = 0.10
-AirFriction = 0.018
+; Slightly higher air speed than Rushdown compensates for lower run speed.
+AirSpeed = 460.0
+AirAcceleration = 0.06
+AirFriction = 0.015
 
 ; ── Gravity & Fall ────────────────────────────────────────────────────────────
-; meleelight Fox gravity = 0.23 u/f² — 2.71× heavier than Marth (0.085 u/f²).
-; This is THE most defining Fox stat: must always attack or get punished landing.
-Gravity = 3500.0
-MaxFallSpeed = 2500.0
-FastFallMultiplier = 1.7
-; Fast-fall to 3800 px/s: Fox's fast-fall is one of the fastest in the roster.
-FastFallMaxSpeed = 3800.0
+; meleelight Marth gravity = 0.085 u/f², Fox = 0.23 u/f². Ratio = 0.37.
+; Swordfighter gravity = 3500 × 0.37 = 1295 → 1300 px/s².
+; This is the LOWEST gravity in the roster — Swordfighter floats visibly.
+Gravity = 1300.0
+MaxFallSpeed = 1700.0
+; Swordfighter fast-fall is meaningful: drops quickly when committed.
+FastFallMultiplier = 1.75
+FastFallMaxSpeed = 2700.0
 
 ; ── Landing Lag ───────────────────────────────────────────────────────────────
 SoftLandingFrames = 2
@@ -70,26 +71,27 @@ HelplessLandingFrames = 20
 LCancelMultiplier = 0.5
 
 ; ── Ledge ─────────────────────────────────────────────────────────────────────
-LedgeGrabBoxOffset = Vector2(16, -8)
-LedgeGrabBoxSize = Vector2(22, 36)
+LedgeGrabBoxOffset = Vector2(18, -10)
+LedgeGrabBoxSize = Vector2(24, 40)
 LedgeHangInvincibilityFrames = 30
 LedgeRegrabCooldownFrames = 30
-LedgeGetupFrames = 22
+LedgeGetupFrames = 26
 
 ; ── Hurtbox Sizing ────────────────────────────────────────────────────────────
-; Small and compact — harder to hit, shorter reach on attacks.
-StandingHurtboxSize = Vector2(34, 78)
-CrouchHurtboxSize = Vector2(38, 46)
+; Taller frame to match the swordsman body type.
+StandingHurtboxSize = Vector2(38, 90)
+CrouchHurtboxSize = Vector2(42, 54)
 
 ; ── Shield ────────────────────────────────────────────────────────────────────
-; Small shield health — cannot camp behind it. Movement is the defense.
-ShieldMaxHealth = 44.0
-ShieldDecayRate = 0.32
-ShieldRegenRate = 0.18
+; Standard shield — Marth is not a shield-heavy character but has solid OOS options.
+ShieldMaxHealth = 50.0
+ShieldDecayRate = 0.28
+ShieldRegenRate = 0.20
 ShieldBreakStunFrames = 180
 
 ; ── Combat ────────────────────────────────────────────────────────────────────
-AttackerHitlagFrames = 3
+; Sword strikes have slightly more hitlag — feels impactful on a clean tipper.
+AttackerHitlagFrames = 4
 
 ; ── Respawn ───────────────────────────────────────────────────────────────────
 SpawnInvincibilityFrames = 120

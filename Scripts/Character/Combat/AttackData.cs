@@ -33,10 +33,15 @@ public partial class AttackData : Resource
     [Export] public int RecoveryFrames { get; set; } = 12;
 
     [ExportGroup("Hitbox")]
-    /// Node name of the Area2D Hitbox in the character scene to arm during active frames.
-    [Export] public string HitboxNodeName { get; set; } = "";
-    /// Combat payload(s). Element 0 is armed onto the hitbox node above.
-    /// Multiple entries are reserved for sweetspot/sourspot & multi-hit support.
+    /// Node name of the primary (or tipper / sweetspot) Hitbox in the character scene.
+    [Export] public string HitboxNodeName  { get; set; } = "";
+    /// Node name of the secondary (sourspot / base) Hitbox, used for tipper mechanics.
+    /// Leave empty for moves with a single hitbox region.
+    /// Hitboxes[1] is armed onto this node; Hitboxes[0] is armed onto HitboxNodeName.
+    /// The tipper (HitboxNodeName) has priority — if it connects on a target, the sourspot
+    /// is suppressed for that target via AttackState.SuppressTarget().
+    [Export] public string HitboxNodeName2 { get; set; } = "";
+    /// Combat payload(s). Element 0 → HitboxNodeName (tipper). Element 1 → HitboxNodeName2 (sourspot).
     [Export] public Array<HitboxData> Hitboxes { get; set; } = new();
 
     [ExportGroup("Tuning")]

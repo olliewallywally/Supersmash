@@ -32,6 +32,11 @@ public partial class Hitbox : Area2D
     /// Targets already hit during the current activation window.
     private readonly HashSet<ulong> _alreadyHit = new();
 
+    /// Add <paramref name="instanceId"/> to the already-hit set without a confirmed hit.
+    /// Called by AttackState when the tipper (sweetspot) hits first, so the sourspot
+    /// cannot land a second hit on the same target in the same activation window.
+    public void SuppressTarget(ulong instanceId) => _alreadyHit.Add(instanceId);
+
     /// Emitted after a confirmed hit, for VFX / SFX / camera-shake listeners.
     [Signal] public delegate void HitConfirmedEventHandler(CharacterController target, HitboxData data);
 

@@ -31,7 +31,8 @@ public partial class AttackState : State
     public string CurrentAttackId { get; private set; } = string.Empty;
 
     private AttackData?  _attack;
-    private Hitbox?      _hitbox;
+    private Hitbox?      _hitbox;   // tipper / primary
+    private Hitbox?      _hitbox2;  // sourspot / secondary (null when unused)
     private WeaponTrail? _trail;
     private int          _frame;
     private bool         _hitboxLive;
@@ -41,6 +42,7 @@ public partial class AttackState : State
         _frame          = 0;
         _hitboxLive     = false;
         _hitbox         = null;
+        _hitbox2        = null;
         _trail          = null;
         _attack         = null;
         CurrentAttackId = string.Empty;
@@ -74,6 +76,22 @@ public partial class AttackState : State
             }
         }
 
+        // Resolve optional sourspot / secondary hitbox.
+        if (!string.IsNullOrEmpty(_attack.HitboxNodeName2))
+        {
+            _hitbox2 = Character.GetNodeOrNull<Hitbox>(_attack.HitboxNodeName2);
+            if (_hitbox2 is not null && _attack.Hitboxes.Count > 1)
+            {
+                _hitbox2.Data              = _attack.Hitboxes[1];
+                _hitbox2.HitstunMultiplier = _attack.HitstunMultiplier;
+            }
+        }
+
+        // Tipper priority: when the sweetspot confirms a hit, suppress that target
+        // on the sourspot so it cannot land a second hit in the same activation window.
+        if (_hitbox is not null && _hitbox2 is not null)
+            _hitbox.HitConfirmed += OnTipperConfirmed;
+
         // Resolve optional weapon trail node.
         if (!string.IsNullOrEmpty(_attack.TrailNodeName))
             _trail = Character.GetNodeOrNull<WeaponTrail>(_attack.TrailNodeName);
@@ -82,9 +100,17 @@ public partial class AttackState : State
     public override void Exit()
     {
         // Safety net: never leave a hitbox or trail live across a state change.
-        if (_hitboxLive) _hitbox?.Deactivate();
+        if (_hitboxLive)
+        {
+            _hitbox?.Deactivate();
+            _hitbox2?.Deactivate();
+        }
         _hitboxLive = false;
         _trail?.Deactivate();
+
+        // Always disconnect the tipper signal even if _hitboxLive was false.
+        if (_hitbox is not null && _hitbox2 is not null)
+            _hitbox.HitConfirmed -= OnTipperConfirmed;
     }
 
     public override void PhysicsUpdate(double delta)
@@ -98,12 +124,13 @@ public partial class AttackState : State
 
         _frame++;
 
-        // First active frame → arm hitbox, activate trail, spawn projectile if any.
+        // First active frame → arm both hitboxes, activate trail, spawn projectile.
         if (_frame == _attack.FirstActiveFrame)
         {
             if (!_hitboxLive && _hitbox is not null)
             {
                 _hitbox.Activate();
+                _hitbox2?.Activate();
                 _hitboxLive = true;
             }
 
@@ -113,12 +140,13 @@ public partial class AttackState : State
                 SpawnProjectile();
         }
 
-        // First recovery frame → disarm hitbox and trail.
+        // First recovery frame → disarm both hitboxes and trail.
         if (_frame == _attack.FirstRecoveryFrame)
         {
             if (_hitboxLive && _hitbox is not null)
             {
                 _hitbox.Deactivate();
+                _hitbox2?.Deactivate();
                 _hitboxLive = false;
             }
 
@@ -134,6 +162,16 @@ public partial class AttackState : State
 
     // Inputs are intentionally not handled mid-attack; buffered presses (jump, etc.)
     // fire naturally in the next state once recovery ends.
+
+    // ── Tipper priority ───────────────────────────────────────────────────────
+
+    private void OnTipperConfirmed(CharacterController target, HitboxData data)
+    {
+        // Tipper (sweetspot) just confirmed a hit. Tell the sourspot to ignore
+        // this target for the rest of the activation window so we never get
+        // a double-hit from the two overlapping hitbox regions.
+        _hitbox2?.SuppressTarget(target.GetInstanceId());
+    }
 
     // ── Projectile spawning ───────────────────────────────────────────────────
 
