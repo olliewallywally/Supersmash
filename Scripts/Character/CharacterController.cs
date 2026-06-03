@@ -53,6 +53,18 @@ public partial class CharacterController : CharacterBody2D
     /// Frame counter for the current state (incremented by states that need it).
     public int StateFrameCounter { get; set; } = 0;
 
+    /// Frames of FullInvincibility remaining after a respawn landing.
+    /// Set by RespawnState on touchdown; counted down in _PhysicsProcess.
+    public int TemporaryInvincibilityFrames { get; set; } = 0;
+
+    // ── Signals ───────────────────────────────────────────────────────────────
+
+    /// Emitted when the character crosses a blast zone. Consumed by RespawnManager.
+    [Signal] public delegate void DiedEventHandler();
+
+    /// Called by BlastZone. Emits the Died signal.
+    public void Die() => EmitSignal(SignalName.Died);
+
     // ── Godot lifecycle ───────────────────────────────────────────────────────
 
     public override void _Ready()
@@ -101,6 +113,14 @@ public partial class CharacterController : CharacterBody2D
 
         // 5. Sync back: MoveAndSlide may zero out velocity on wall/floor contact.
         CharacterVelocity = Velocity;
+
+        // 6. Tick down post-respawn invincibility and lift it when the window expires.
+        if (TemporaryInvincibilityFrames > 0)
+        {
+            TemporaryInvincibilityFrames--;
+            if (TemporaryInvincibilityFrames == 0)
+                HurtboxContainer.CurrentInvincibility = Hurtbox.InvincibilityType.None;
+        }
     }
 
     // ── Hit reception (called by attacker's Hitbox signal) ───────────────────

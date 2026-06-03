@@ -99,4 +99,9 @@ public partial class CharacterData : Resource
     [ExportGroup("Combat")]
     /// Frames the character is frozen in hitlag when their own attack connects.
     [Export] public int AttackerHitlagFrames { get; set; } = 3;
+
+    [ExportGroup("Respawn")]
+    /// Frames of FullInvincibility granted the moment the character lands after a respawn.
+    /// 120 frames = 2 seconds at 60 Hz — enough to get a footing without being ambushed.
+    [Export] public int SpawnInvincibilityFrames { get; set; } = 120;
 }
