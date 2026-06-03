@@ -1,0 +1,83 @@
+; Rushdown — lightweight rushdown archetype.
+; Design intent: lowest weight (82), highest speed, full Melee-style momentum carry.
+; Dies early from knockback but controls neutral through speed and dash-dance.
+; Inspired by: Fox (77), Sheik (80), Pichu (62 → tuned up), Falco (80).
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/CharacterData.cs" id="Script_CharacterData"]
+
+[resource]
+script = ExtResource("Script_CharacterData")
+
+; ── Identity ──────────────────────────────────────────────────────────────────
+; Weight 82 → formula denominator (200/(82+100)) = 1.10. Takes ~10% MORE KB
+; than mid-weight. Glass cannon — punish or be punished.
+Weight = 82.0
+
+; ── Ground Movement ───────────────────────────────────────────────────────────
+WalkSpeed = 370.0
+RunSpeed = 760.0
+; Blazing initial dash — the highest in the game. Core to dash-dance neutral.
+InitialDashSpeed = 950.0
+; High friction = snappy stops. Pairs with high speed for tight dash-dancing.
+GroundFriction = 0.24
+TurnaroundFriction = 0.36
+
+; ── Dash & Dash-Dance ─────────────────────────────────────────────────────────
+InitialDashFrames = 12
+; DashDanceWindow > InitialDashFrames — Rushdown can dash-dance with a wider
+; reversal window than most characters. This IS their defense.
+DashDanceWindowFrames = 14
+FoxtrotCooldownFrames = 1
+
+; ── Jumping ───────────────────────────────────────────────────────────────────
+; Universal 3-frame jumpsquat.
+JumpSquatFrames = 3
+FullHopVelocity = -1100.0
+ShortHopVelocity = -700.0
+AirJumpVelocity = -1060.0
+MaxAirJumps = 1
+; Full Melee-style momentum transfer. A max-speed dash-jump carries 950 px/s → 700 cap.
+JumpMomentumTransfer = 1.0
+MaxHorizontalJumpSpeed = 700.0
+
+; ── Air Movement ──────────────────────────────────────────────────────────────
+AirSpeed = 520.0
+; High acceleration — reaches full air speed quickly after a drift input.
+AirAcceleration = 0.10
+AirFriction = 0.018
+
+; ── Gravity & Fall ────────────────────────────────────────────────────────────
+; Heavy gravity + fast fall = must always be attacking; can't afford to float.
+; High fall speed also means less time in vulnerable airborne state.
+Gravity = 3200.0
+MaxFallSpeed = 2300.0
+FastFallMultiplier = 1.7
+FastFallMaxSpeed = 3600.0
+
+; ── Landing Lag ───────────────────────────────────────────────────────────────
+SoftLandingFrames = 2
+HelplessLandingFrames = 20
+LCancelMultiplier = 0.5
+
+; ── Ledge ─────────────────────────────────────────────────────────────────────
+LedgeGrabBoxOffset = Vector2(16, -8)
+LedgeGrabBoxSize = Vector2(22, 36)
+LedgeHangInvincibilityFrames = 30
+LedgeRegrabCooldownFrames = 30
+LedgeGetupFrames = 22
+
+; ── Hurtbox Sizing ────────────────────────────────────────────────────────────
+; Smaller frame — harder to hit, but also shorter reach on attacks.
+StandingHurtboxSize = Vector2(34, 78)
+CrouchHurtboxSize = Vector2(38, 46)
+
+; ── Shield ────────────────────────────────────────────────────────────────────
+; Smaller shield health — must rely on movement, not shield, for defense.
+ShieldMaxHealth = 44.0
+ShieldDecayRate = 0.32
+ShieldRegenRate = 0.18
+ShieldBreakStunFrames = 180
+
+; ── Combat ────────────────────────────────────────────────────────────────────
+AttackerHitlagFrames = 3

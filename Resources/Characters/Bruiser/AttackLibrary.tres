@@ -1,0 +1,122 @@
+; Bruiser — AttackLibrary.
+; Slow startup, devastating knockback. Every move is a commitment.
+; ForwardSmash kills mid-stage around 90% — the entire neutral game exists to land it.
+;
+; Balance philosophy:
+;   Jab        : slow but true combo starter at 0–30%.
+;   BodySlam   : forward tilt with horizontal spike angle; wall-of-pain tool.
+;   GroundPound: frame 21+, a spike aerial. Used off-stage only.
+;   ForwardSmash: the win condition. Unsafe on shield, rewarded on read.
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+
+; ── Jab ─────────────────────────────────────────────────────────────────────
+; Frame 5 (StartupFrames=4). Slow for a jab, but leads to combos early.
+[sub_resource type="Resource" id="HitboxData_Jab"]
+script = ExtResource("Script_HitboxData")
+Damage = 5.0
+BaseKnockback = 18.0
+KnockbackGrowth = 25.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 5
+HitstunFrames = 14
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_Jab"]
+script = ExtResource("Script_AttackData")
+AttackId = "Jab"
+IsAerial = false
+StartupFrames = 4
+ActiveFrames = 4
+RecoveryFrames = 18
+HitboxNodeName = "JabHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_Jab")])
+HitstunMultiplier = 1.0
+
+; ── BodySlam (Forward Tilt) ──────────────────────────────────────────────────
+; Frame 12. Low 20° angle. At mid-percent, keeps opponent close for follow-ups.
+[sub_resource type="Resource" id="HitboxData_BodySlam"]
+script = ExtResource("Script_HitboxData")
+Damage = 12.0
+BaseKnockback = 30.0
+KnockbackGrowth = 80.0
+LaunchAngle = 20.0
+AngleFlipsWithFacing = true
+HitlagFrames = 8
+HitstunFrames = 24
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_BodySlam"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardTilt"
+IsAerial = false
+StartupFrames = 11
+ActiveFrames = 5
+RecoveryFrames = 22
+HitboxNodeName = "ForwardTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_BodySlam")])
+HitstunMultiplier = 1.0
+
+; ── GroundPound (NeutralAir/spike) ───────────────────────────────────────────
+; Frame 21. Angled 270° (straight down). Only useful off-stage or on grounded foes.
+[sub_resource type="Resource" id="HitboxData_GroundPound"]
+script = ExtResource("Script_HitboxData")
+Damage = 14.0
+BaseKnockback = 40.0
+KnockbackGrowth = 60.0
+LaunchAngle = 270.0
+AngleFlipsWithFacing = false
+HitlagFrames = 9
+HitstunFrames = 28
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_GroundPound"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralAir"
+IsAerial = true
+StartupFrames = 20
+ActiveFrames = 6
+RecoveryFrames = 28
+HitboxNodeName = "NairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_GroundPound")])
+HitstunMultiplier = 0.9
+
+; ── ForwardSmash (the win condition) ─────────────────────────────────────────
+; Frame 19. KBG=120 kills mid-stage around 90%. Never safe on shield.
+[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+script = ExtResource("Script_HitboxData")
+Damage = 22.0
+BaseKnockback = 45.0
+KnockbackGrowth = 120.0
+LaunchAngle = 38.0
+AngleFlipsWithFacing = true
+HitlagFrames = 12
+HitstunFrames = 40
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardSmash"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardSmash"
+IsAerial = false
+StartupFrames = 18
+ActiveFrames = 5
+RecoveryFrames = 42
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardSmash")])
+HitstunMultiplier = 1.1
+
+[resource]
+script = ExtResource("Script_AttackLibrary")
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_BodySlam"), SubResource("AttackData_GroundPound"), SubResource("AttackData_ForwardSmash")])

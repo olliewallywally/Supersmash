@@ -1,0 +1,81 @@
+; Bruiser — heavyweight archetype.
+; Design intent: high knockback resistance (Weight=130), slow movement,
+; heavy gravity / fast fall. The character commits hard to every action
+; but punishes opponents severely for standing still.
+; Inspired by: Bowser (135), King K. Rool (133), DK (127).
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/CharacterData.cs" id="Script_CharacterData"]
+
+[resource]
+script = ExtResource("Script_CharacterData")
+
+; ── Identity ──────────────────────────────────────────────────────────────────
+; Weight 130 → formula denominator (200/(130+100)) = 0.87. Takes ~13% less KB
+; than the mid-weight base (100). Lightweight (82) takes ~22% more.
+Weight = 130.0
+
+; ── Ground Movement ───────────────────────────────────────────────────────────
+WalkSpeed = 230.0
+RunSpeed = 390.0
+InitialDashSpeed = 480.0
+; Slightly lower friction — heavy bodies slide a bit before stopping.
+GroundFriction = 0.13
+TurnaroundFriction = 0.22
+
+; ── Dash & Dash-Dance ─────────────────────────────────────────────────────────
+InitialDashFrames = 16
+; Narrower dash-dance window than mid-weight — harder to change direction quickly.
+DashDanceWindowFrames = 10
+FoxtrotCooldownFrames = 3
+
+; ── Jumping ───────────────────────────────────────────────────────────────────
+; 5-frame jumpsquat (Ultimate Bowser = 5). Committed; harder to react to.
+JumpSquatFrames = 5
+FullHopVelocity = -880.0
+ShortHopVelocity = -530.0
+AirJumpVelocity = -820.0
+MaxAirJumps = 1
+; 0.7 momentum carry: dash-jump still has some distance but not Melee-level carry.
+JumpMomentumTransfer = 0.7
+MaxHorizontalJumpSpeed = 560.0
+
+; ── Air Movement ──────────────────────────────────────────────────────────────
+AirSpeed = 270.0
+AirAcceleration = 0.045
+AirFriction = 0.015
+
+; ── Gravity & Fall ────────────────────────────────────────────────────────────
+; High gravity = falls fast = difficult to juggle, but vulnerable to early kills.
+Gravity = 3100.0
+MaxFallSpeed = 2000.0
+FastFallMultiplier = 1.6
+FastFallMaxSpeed = 3200.0
+
+; ── Landing Lag ───────────────────────────────────────────────────────────────
+; Heavier landing lag — the tradeoff for power.
+SoftLandingFrames = 3
+HelplessLandingFrames = 26
+LCancelMultiplier = 0.5
+
+; ── Ledge ─────────────────────────────────────────────────────────────────────
+LedgeGrabBoxOffset = Vector2(22, -6)
+LedgeGrabBoxSize = Vector2(28, 48)
+LedgeHangInvincibilityFrames = 28
+LedgeRegrabCooldownFrames = 35
+LedgeGetupFrames = 32
+
+; ── Hurtbox Sizing ────────────────────────────────────────────────────────────
+; Larger frame — easier to hit but range on attacks is also longer.
+StandingHurtboxSize = Vector2(52, 108)
+CrouchHurtboxSize = Vector2(56, 64)
+
+; ── Shield ────────────────────────────────────────────────────────────────────
+; Thicker shield — survives more pressure.
+ShieldMaxHealth = 58.0
+ShieldDecayRate = 0.24
+ShieldRegenRate = 0.22
+ShieldBreakStunFrames = 180
+
+; ── Combat ────────────────────────────────────────────────────────────────────
+AttackerHitlagFrames = 4

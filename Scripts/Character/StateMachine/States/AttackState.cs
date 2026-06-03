@@ -25,6 +25,11 @@ namespace Supersmash;
 /// </summary>
 public partial class AttackState : State
 {
+    /// The AttackId that was requested when entering this state.
+    /// Read by AnimationController to resolve the correct animation name.
+    /// Remains set even if the attack is not found in the library (for debug logging).
+    public string CurrentAttackId { get; private set; } = string.Empty;
+
     private AttackData? _attack;
     private Hitbox?     _hitbox;
     private int         _frame;
@@ -32,14 +37,17 @@ public partial class AttackState : State
 
     public override void Enter(Dictionary? msg = null)
     {
-        _frame      = 0;
-        _hitboxLive = false;
-        _hitbox     = null;
-        _attack     = null;
+        _frame          = 0;
+        _hitboxLive     = false;
+        _hitbox         = null;
+        _attack         = null;
+        CurrentAttackId = string.Empty;
 
         string attackId = string.Empty;
         if (msg is not null && msg.TryGetValue("attack_type", out Variant v))
             attackId = v.AsString();
+
+        CurrentAttackId = attackId; // set before library lookup so it's always readable
 
         _attack = Character.Attacks?.Get(attackId);
         if (_attack is null)

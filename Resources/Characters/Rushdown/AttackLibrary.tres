@@ -1,0 +1,127 @@
+; Rushdown — AttackLibrary.
+; Fast startup, low knockback. Combo-first kit — strings together 4-5 hits
+; to build percent, then converts with ForwardSmash at kill percent.
+;
+; Balance philosophy:
+;   Jab        : frame 2 — literally the fastest possible jab. Links into itself
+;                3× at low percent (jab lock risk). Forces immediate shielding.
+;   NeutralAir : fast, follows from short-hop. Combo filler.
+;   ForwardTilt: frame 6 poke. Low recovery; safe on shield at full spacing.
+;   ForwardSmash: frame 11 — fastest smash attack. Less raw power than Bruiser's
+;                but confirms from conditioning opponents to shield jabs.
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+
+; ── Jab ─────────────────────────────────────────────────────────────────────
+; Frame 2 (StartupFrames=1). Minimal damage but forces instant reactions.
+; Low BKB intentional — stays close for follow-ups. Does NOT kill.
+[sub_resource type="Resource" id="HitboxData_Jab"]
+script = ExtResource("Script_HitboxData")
+Damage = 2.0
+BaseKnockback = 10.0
+KnockbackGrowth = 15.0
+LaunchAngle = 50.0
+AngleFlipsWithFacing = true
+HitlagFrames = 2
+HitstunFrames = 8
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_Jab"]
+script = ExtResource("Script_AttackData")
+AttackId = "Jab"
+IsAerial = false
+StartupFrames = 1
+ActiveFrames = 2
+RecoveryFrames = 8
+HitboxNodeName = "JabHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_Jab")])
+HitstunMultiplier = 0.9
+
+; ── NeutralAir ───────────────────────────────────────────────────────────────
+; Frame 4. 4-frame active window. Short-hop auto-cancel friendly.
+; Converts to ForwardSmash around 80% via DI read.
+[sub_resource type="Resource" id="HitboxData_NeutralAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 6.0
+BaseKnockback = 15.0
+KnockbackGrowth = 65.0
+LaunchAngle = 42.0
+AngleFlipsWithFacing = true
+HitlagFrames = 4
+HitstunFrames = 14
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralAir"
+IsAerial = true
+StartupFrames = 3
+ActiveFrames = 4
+RecoveryFrames = 14
+HitboxNodeName = "NairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralAir")])
+HitstunMultiplier = 1.0
+
+; ── ForwardTilt ───────────────────────────────────────────────────────────────
+; Frame 6. Safe poke. 28° angle keeps opponent grounded for follow-up dash.
+[sub_resource type="Resource" id="HitboxData_ForwardTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 7.0
+BaseKnockback = 20.0
+KnockbackGrowth = 75.0
+LaunchAngle = 28.0
+AngleFlipsWithFacing = true
+HitlagFrames = 5
+HitstunFrames = 16
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardTilt"
+IsAerial = false
+StartupFrames = 5
+ActiveFrames = 2
+RecoveryFrames = 10
+HitboxNodeName = "ForwardTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardTilt")])
+HitstunMultiplier = 1.0
+
+; ── ForwardSmash ─────────────────────────────────────────────────────────────
+; Frame 11 — fastest smash in the roster. KBG=95 kills around 115-120% mid-stage.
+; Less raw power than Bruiser, but confirmed through conditioning + speed.
+[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+script = ExtResource("Script_HitboxData")
+Damage = 14.0
+BaseKnockback = 32.0
+KnockbackGrowth = 95.0
+LaunchAngle = 42.0
+AngleFlipsWithFacing = true
+HitlagFrames = 8
+HitstunFrames = 28
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardSmash"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardSmash"
+IsAerial = false
+StartupFrames = 10
+ActiveFrames = 3
+RecoveryFrames = 22
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardSmash")])
+HitstunMultiplier = 1.05
+
+[resource]
+script = ExtResource("Script_AttackLibrary")
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_ForwardSmash")])
