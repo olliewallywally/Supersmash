@@ -69,7 +69,7 @@ public partial class JumpState : State
         Character.CharacterVelocity = MovementComponent.ApplyGravity(
             Character.CharacterVelocity, Character.Data, isFastFalling: false, delta);
 
-        Character.CharacterVelocity = MovementComponent.ApplyAirDrift(
+        Character.CharacterVelocity = MovementComponent.ApplyAirMovement(
             Character.CharacterVelocity, Character.Input.MoveStick.X, Character.Data);
     }
 }

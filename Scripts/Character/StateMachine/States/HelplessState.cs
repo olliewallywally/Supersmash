@@ -45,8 +45,9 @@ public partial class HelplessState : State
         Character.CharacterVelocity = MovementComponent.ApplyGravity(
             Character.CharacterVelocity, Character.Data, isFastFalling: false, delta);
 
-        // Passive air friction bleeds off horizontal momentum but player can't add to it.
-        Character.CharacterVelocity = MovementComponent.ApplyAirFriction(
-            Character.CharacterVelocity, Character.Data);
+        // No player control: pass zero input so only passive friction applies,
+        // bleeding off horizontal momentum without any drift contribution.
+        Character.CharacterVelocity = MovementComponent.ApplyAirMovement(
+            Character.CharacterVelocity, inputX: 0f, Character.Data);
     }
 }

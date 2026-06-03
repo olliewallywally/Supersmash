@@ -47,21 +47,44 @@ public partial class MovementComponent : Node
 
     // ── Air Movement ─────────────────────────────────────────────────────────
 
-    /// Drift toward target air speed. Air acceleration is intentionally lower than
-    /// ground acceleration to preserve momentum from previous states (e.g., dash-off).
-    public static Vector2 ApplyAirDrift(Vector2 vel, float inputX, CharacterData data)
+    /// <summary>
+    /// Unified horizontal air physics: passive friction + input-driven drift, in one pass.
+    /// Call once per tick from any airborne state (JumpState, FallState, …).
+    ///
+    /// Key behaviour — over-speed is allowed and decays:
+    ///   • Ground momentum carried into a jump can exceed AirSpeed (the drift cap).
+    ///   • Passive friction (AirFriction) ALWAYS pulls toward zero, so that carried
+    ///     over-speed bleeds back down toward the AirSpeed budget over time.
+    ///   • Drift input accelerates toward (±AirSpeed) but can NEVER push magnitude
+    ///     further out once you're inside the [-AirSpeed, AirSpeed] band, and gives no
+    ///     extra boost while you're already over-speed in that same direction.
+    ///   • Drift opposing an over-speed is allowed full effect, so you can actively
+    ///     kill carried momentum faster than friction alone.
+    /// </summary>
+    public static Vector2 ApplyAirMovement(Vector2 vel, float inputX, CharacterData data)
     {
-        float target = inputX * data.AirSpeed;
-        float newX   = Mathf.Lerp(vel.X, target, data.AirAcceleration);
-        newX = Mathf.Clamp(newX, -data.AirSpeed, data.AirSpeed);
-        return new Vector2(newX, vel.Y);
-    }
+        float maxAir = data.AirSpeed;
 
-    /// Passive air friction when no horizontal input is held.
-    public static Vector2 ApplyAirFriction(Vector2 vel, CharacterData data)
-    {
-        float newX = Mathf.Lerp(vel.X, 0f, data.AirFriction);
-        return new Vector2(newX, vel.Y);
+        // 1. Passive decay toward zero — the mechanism that bleeds off over-speed.
+        float vx = Mathf.Lerp(vel.X, 0f, data.AirFriction);
+
+        // 2. Input-driven drift, gated so it never inflates speed past the budget.
+        if (Mathf.Abs(inputX) > 0.1f)
+        {
+            float target  = inputX * maxAir;
+            float drifted = Mathf.Lerp(vx, target, data.AirAcceleration);
+
+            bool overSpeed   = Mathf.Abs(vx) > maxAir;
+            bool sameDir     = Mathf.Sign(inputX) == Mathf.Sign(vx);
+
+            if (!overSpeed)
+                vx = Mathf.Clamp(drifted, -maxAir, maxAir); // normal in-band drift
+            else if (!sameDir)
+                vx = drifted;                               // opposing input: pull inward freely
+            // else: holding into the over-speed — friction alone governs, no boost.
+        }
+
+        return new Vector2(vx, vel.Y);
     }
 
     // ── Directional Influence ─────────────────────────────────────────────────

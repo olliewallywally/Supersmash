@@ -3,6 +3,17 @@ using Godot.Collections;
 
 namespace Supersmash;
 
+/// <summary>
+/// The descending arc. Entered from JumpState (past the apex), from walking off a
+/// ledge, or after hitstun ends in the air.
+///
+/// Handles:
+///   • Gravity (fast-fall-aware terminal velocity).
+///   • Air drift via the unified ApplyAirMovement (over-speed decay included).
+///   • Fast-fall on a deliberate downward flick — instant snap, locked until landing.
+///   • Mid-air jumps (instantaneous, bypassing JumpSquat → hands to JumpState).
+///   • Aerial attacks.
+/// </summary>
 public partial class FallState : State
 {
     public override void Enter(Dictionary? msg = null)
@@ -12,30 +23,37 @@ public partial class FallState : State
 
     public override void HandleInput(InputHandler input)
     {
-        // Fast fall: tap down while falling (not just holding).
-        if (!Character.IsFastFalling &&
-            Character.CharacterVelocity.Y > 0 &&
-            input.IsJustPressed(GameAction.Dodge) == false && // not a dodge
-            input.MoveStick.Y > 0.65f)
-        {
-            // Use IsJustPressed with a 1-frame buffer for tap detection.
-            // We check the stick magnitude crossed the threshold this frame.
-            Character.IsFastFalling = true;
-        }
-
-        // Air jump.
+        // ── Mid-air jump ──────────────────────────────────────────────────────
+        // Instantaneous: no JumpSquat window in the air. Preserve horizontal
+        // momentum, override vertical, then hand to JumpState for the rising arc.
         if (input.IsBuffered(GameAction.Jump) && Character.AirJumpsRemaining > 0)
         {
             input.Consume(GameAction.Jump);
             Character.AirJumpsRemaining--;
-            Character.IsFastFalling = false;
+            Character.IsFastFalling = false; // a fresh jump cancels fast-fall lock
             Character.CharacterVelocity = new Vector2(
                 Character.CharacterVelocity.X,
                 Character.Data.AirJumpVelocity);
-            // Stay in FallState; jump arc will be governed by gravity here.
+            FSM.TransitionTo("JumpState");
             return;
         }
 
+        // ── Fast-fall ─────────────────────────────────────────────────────────
+        // Only on a deliberate downward FLICK (see InputHandler.IsFastFallFlick),
+        // only while already descending, and only once per fall. On trigger we
+        // SNAP vertical velocity to the fast-fall speed instantly and latch the flag;
+        // the lock persists until the character lands (cleared in PhysicsUpdate).
+        if (!Character.IsFastFalling &&
+            Character.CharacterVelocity.Y > 0f &&
+            input.IsFastFallFlick())
+        {
+            Character.IsFastFalling = true;
+            Character.CharacterVelocity = new Vector2(
+                Character.CharacterVelocity.X,
+                Character.Data.FastFallMaxSpeed); // instant snap to fast-fall speed
+        }
+
+        // ── Aerial attack ─────────────────────────────────────────────────────
         if (input.IsBuffered(GameAction.Attack))
         {
             input.Consume(GameAction.Attack);
@@ -59,16 +77,7 @@ public partial class FallState : State
         Character.CharacterVelocity = MovementComponent.ApplyGravity(
             Character.CharacterVelocity, Character.Data, Character.IsFastFalling, delta);
 
-        float inputX = Character.Input.MoveStick.X;
-        if (Mathf.Abs(inputX) > 0.1f)
-        {
-            Character.CharacterVelocity = MovementComponent.ApplyAirDrift(
-                Character.CharacterVelocity, inputX, Character.Data);
-        }
-        else
-        {
-            Character.CharacterVelocity = MovementComponent.ApplyAirFriction(
-                Character.CharacterVelocity, Character.Data);
-        }
+        Character.CharacterVelocity = MovementComponent.ApplyAirMovement(
+            Character.CharacterVelocity, Character.Input.MoveStick.X, Character.Data);
     }
 }

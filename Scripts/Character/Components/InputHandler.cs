@@ -165,6 +165,28 @@ public partial class InputHandler : Node
     /// Returns the C-stick vector for this tick.
     public Vector2 CStick => CurrentFrame.CStick;
 
+    /// The InputFrame captured on the PREVIOUS physics tick. Used for edge detection.
+    private ref InputFrame PreviousFrame => ref _buffer[(_head - 1 + BufferSize) % BufferSize];
+
+    /// <summary>
+    /// Detects a deliberate downward FLICK of the movement stick — the signature of a
+    /// fast-fall input — as opposed to the stick simply being held down.
+    ///
+    /// The distinction is pure edge detection with hysteresis:
+    ///   • Trigger only on the tick the down-axis CROSSES UP through <paramref name="engage"/>,
+    ///     having been below <paramref name="release"/> on the previous tick.
+    ///   • Because it requires that rising edge, a stick already held down (prev ≥ release)
+    ///     never re-triggers. To fast-fall again you must return the stick toward neutral
+    ///     and flick down a second time.
+    ///
+    /// This is exactly why holding down to buffer a down-air does NOT accidentally
+    /// fast-fall: a held input has no rising edge. The two gates (engage high, release
+    /// low) give a dead-band so a slightly-jittery stick can't false-trigger either.
+    /// Godot's Y-axis points down, so a positive Y is "down".
+    /// </summary>
+    public bool IsFastFallFlick(float engage = 0.65f, float release = 0.35f) =>
+        PreviousFrame.MoveStick.Y < release && CurrentFrame.MoveStick.Y >= engage;
+
     // ── Private helpers ───────────────────────────────────────────────────────
 
     private static int CurrentTick => (int)Engine.GetPhysicsFrames();
