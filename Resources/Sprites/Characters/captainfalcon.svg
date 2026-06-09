@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Captain Falcon placeholder sprite. CC0 public domain. -->
+<!-- Tall, muscular, red racing suit. Largest humanoid in the roster. -->
+<svg width="70" height="160" viewBox="0 0 70 160" version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+  <!-- Head -->
+  <ellipse cx="35" cy="20" rx="16" ry="16" fill="#2a2a2a" stroke="#111" stroke-width="2"/>
+  <!-- Helmet visor -->
+  <ellipse cx="35" cy="22" rx="12" ry="9" fill="#C03000"/>
+  <!-- Visor slit -->
+  <rect x="24" y="18" width="22" height="6" rx="3" fill="#FFD700" opacity="0.9"/>
+  <!-- Falcon symbol on helmet -->
+  <polygon points="35,10 32,16 38,16" fill="#FFD700"/>
+  <!-- Neck -->
+  <rect x="30" y="36" width="10" height="8" rx="3" fill="#C03000"/>
+  <!-- Body — wider than others -->
+  <rect x="13" y="44" width="44" height="58" rx="10" fill="#C03000" stroke="#800000" stroke-width="2"/>
+  <!-- Chest F emblem area -->
+  <rect x="22" y="52" width="26" height="32" rx="5" fill="#D04010"/>
+  <!-- Belt -->
+  <rect x="13" y="96" width="44" height="8" rx="3" fill="#FFD700"/>
+  <!-- Shoulder pads -->
+  <ellipse cx="16" cy="48" rx="8" ry="6" fill="#800000"/>
+  <ellipse cx="54" cy="48" rx="8" ry="6" fill="#800000"/>
+  <!-- Left arm — thick -->
+  <rect x="3" y="46" width="13" height="36" rx="6" fill="#C03000" stroke="#800000" stroke-width="1.5"/>
+  <!-- Right arm — fist raised slightly -->
+  <rect x="54" y="42" width="13" height="36" rx="6" fill="#C03000" stroke="#800000" stroke-width="1.5"/>
+  <!-- Gloves -->
+  <ellipse cx="9.5" cy="84" rx="7" ry="6" fill="#2a2a2a"/>
+  <ellipse cx="60.5" cy="80" rx="7" ry="6" fill="#2a2a2a"/>
+  <!-- Left leg — thick -->
+  <rect x="15" y="104" width="14" height="42" rx="6" fill="#900000" stroke="#600000" stroke-width="1.5"/>
+  <!-- Right leg -->
+  <rect x="41" y="104" width="14" height="42" rx="6" fill="#900000" stroke="#600000" stroke-width="1.5"/>
+  <!-- Boots -->
+  <ellipse cx="22" cy="148" rx="13" ry="7" fill="#1a1a1a"/>
+  <ellipse cx="48" cy="148" rx="13" ry="7" fill="#1a1a1a"/>
+</svg>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Falco (Falco Lombardi archetype) placeholder sprite. CC0 public domain. -->
+<!-- Similar build to Rushdown but darker blue. Wing-accent collar detail. -->
+<svg width="61" height="144" viewBox="0 0 61 144" version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+  <!-- Head -->
+  <ellipse cx="30.5" cy="20" rx="14" ry="14" fill="#3070C0" stroke="#1040A0" stroke-width="2"/>
+  <!-- Beak / face plate -->
+  <ellipse cx="30.5" cy="23" rx="8" ry="6" fill="#90B8FF"/>
+  <!-- Eyes -->
+  <circle cx="24" cy="17" r="3.5" fill="white"/>
+  <circle cx="37" cy="17" r="3.5" fill="white"/>
+  <circle cx="25" cy="17" r="1.8" fill="#1a1a1a"/>
+  <circle cx="38" cy="17" r="1.8" fill="#1a1a1a"/>
+  <!-- Body -->
+  <rect x="17" y="36" width="27" height="52" rx="8" fill="#3070C0" stroke="#1040A0" stroke-width="2"/>
+  <!-- Wing-accent collar -->
+  <polygon points="17,44 7,36 17,56" fill="#1040A0"/>
+  <polygon points="44,44 54,36 44,56" fill="#1040A0"/>
+  <!-- Chest plate -->
+  <rect x="21" y="48" width="19" height="26" rx="4" fill="#5090E0"/>
+  <!-- Left arm -->
+  <rect x="6" y="38" width="11" height="30" rx="5" fill="#3070C0" stroke="#1040A0" stroke-width="1.5"/>
+  <!-- Right arm -->
+  <rect x="44" y="38" width="11" height="30" rx="5" fill="#3070C0" stroke="#1040A0" stroke-width="1.5"/>
+  <!-- Left leg -->
+  <rect x="18" y="88" width="10" height="38" rx="5" fill="#204080" stroke="#102060" stroke-width="1.5"/>
+  <!-- Right leg -->
+  <rect x="33" y="88" width="10" height="38" rx="5" fill="#204080" stroke="#102060" stroke-width="1.5"/>
+  <!-- Feet -->
+  <ellipse cx="23" cy="128" rx="10" ry="6" fill="#102060"/>
+  <ellipse cx="38" cy="128" rx="10" ry="6" fill="#102060"/>
+</svg>

@@ -1,0 +1,101 @@
+; Falco — Falco Lombardi archetype (Melee-accurate tuning).
+; Physics source: meleelight (MIT © Will Blackett) — github.com/schmooblidon/meleelight
+; Raw meleelight Falco stats: weight=80, gravity=0.17 u/f² (0.739× Fox's 0.23),
+;   terminalV≈3.1 u/f, fastFall=3.5 u/f, dashInit=1.82 u/f, dashMax≈1.6 u/f,
+;   walkMax=1.4 u/f, jumpSquat=5 f, aerialAccelA=0.05.
+; Fox/Falco gravity ratio = 0.17/0.23 = 0.739. Falco gravity = 3500 × 0.739 = 2587 → 2600.
+;
+; Design intent:
+;   Mid-weight (80). Second-heaviest gravity — falls faster than Rushdown, can escape juggles.
+;   Slower sustained run than Rushdown but similar initial burst. Low air mobility is the key
+;   weakness: Falco cannot weave in the air and is heavily punished for poor spacing.
+;   Laser pressure (would be specials) forces bad options that his strong bair/nair cover.
+;   Shorter short hop than Rushdown creates a tighter SHFL window — higher execution ceiling.
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/CharacterData.cs" id="Script_CharacterData"]
+
+[resource]
+script = ExtResource("Script_CharacterData")
+
+; ── Identity ──────────────────────────────────────────────────────────────────
+; Melee Falco = 80 weight. Lighter than Fox in the source game (Melee 75) but heavier
+; than our Rushdown archetype (77) — survives slightly longer due to weight.
+Weight = 80.0
+
+; ── Ground Movement ───────────────────────────────────────────────────────────
+; meleelight: walkMax=1.4, dashInit=1.82, dashMax≈1.6 u/f.
+; Fox dashMax=2.2→790; Falco dashMax=1.6→790×(1.6/2.2)=575 → 690 using smashwiki ratio.
+; Smashwiki run speeds: Falco 1.82, Fox 2.09. Scale: 790×(1.82/2.09) = 688 → 690.
+WalkSpeed = 510.0
+RunSpeed = 690.0
+InitialDashSpeed = 880.0
+; Slightly less traction than Rushdown — Falco slides a bit more through pivots.
+GroundFriction = 0.22
+TurnaroundFriction = 0.35
+
+; ── Dash & Dash-Dance ─────────────────────────────────────────────────────────
+; meleelight: dash phase similar to Fox (≈11 frames initial dash).
+InitialDashFrames = 11
+; Slightly shorter dash-dance window than Rushdown — Falco relies more on positioning.
+DashDanceWindowFrames = 13
+FoxtrotCooldownFrames = 1
+
+; ── Jumping ───────────────────────────────────────────────────────────────────
+; meleelight jumpSquat=5. One frame SLOWER than Fox (4 → 5) — distinguishing feel.
+; The shorter short hop is Falco's most critical physical difference from Fox.
+JumpSquatFrames = 5
+FullHopVelocity = -1080.0
+; Shorter short hop than Fox (-720) — tighter SHFL window, harder to space aerials.
+ShortHopVelocity = -680.0
+AirJumpVelocity = -1000.0
+MaxAirJumps = 1
+JumpMomentumTransfer = 0.95
+MaxHorizontalJumpSpeed = 690.0
+
+; ── Air Movement ──────────────────────────────────────────────────────────────
+; meleelight aerialAccelA=0.05 (vs Fox 0.10). Falco has HALF Fox's air mobility.
+; This is the defining weakness: once airborne without a plan, Falco is vulnerable.
+AirSpeed = 360.0
+AirAcceleration = 0.05
+AirFriction = 0.016
+
+; ── Gravity & Fall ────────────────────────────────────────────────────────────
+; meleelight Falco gravity = 0.17 u/f² (vs Fox 0.23). Ratio = 0.739.
+; Falco gravity = 3500 × 0.739 = 2587 → 2600 px/s².
+; Faster fall than Swordfighter (1300) — Falco escapes juggles if opponent doesn't chase.
+Gravity = 2600.0
+MaxFallSpeed = 2800.0
+; meleelight fastFall = 3.5 u/f (vs Fox 3.4). Slightly faster fast-fall.
+FastFallMultiplier = 1.75
+FastFallMaxSpeed = 3900.0
+
+; ── Landing Lag ───────────────────────────────────────────────────────────────
+SoftLandingFrames = 2
+HelplessLandingFrames = 20
+LCancelMultiplier = 0.5
+
+; ── Ledge ─────────────────────────────────────────────────────────────────────
+LedgeGrabBoxOffset = Vector2(16, -8)
+LedgeGrabBoxSize = Vector2(22, 36)
+LedgeHangInvincibilityFrames = 30
+LedgeRegrabCooldownFrames = 30
+LedgeGetupFrames = 22
+
+; ── Hurtbox Sizing ────────────────────────────────────────────────────────────
+; Same compact frame as Rushdown — same bird/fighter body type.
+StandingHurtboxSize = Vector2(34, 78)
+CrouchHurtboxSize = Vector2(38, 46)
+
+; ── Shield ────────────────────────────────────────────────────────────────────
+; Standard shield. Falco's defense is positional, not shield-based.
+ShieldMaxHealth = 44.0
+ShieldDecayRate = 0.32
+ShieldRegenRate = 0.18
+ShieldBreakStunFrames = 180
+
+; ── Combat ────────────────────────────────────────────────────────────────────
+AttackerHitlagFrames = 3
+
+; ── Respawn ───────────────────────────────────────────────────────────────────
+SpawnInvincibilityFrames = 120

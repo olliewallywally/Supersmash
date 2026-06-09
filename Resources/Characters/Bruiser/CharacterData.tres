@@ -79,3 +79,6 @@ ShieldBreakStunFrames = 180
 
 ; ── Combat ────────────────────────────────────────────────────────────────────
 AttackerHitlagFrames = 4
+
+; ── Respawn ───────────────────────────────────────────────────────────────────
+SpawnInvincibilityFrames = 120

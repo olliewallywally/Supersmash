@@ -1,0 +1,110 @@
+; Captain Falcon — archetype (Melee-accurate tuning).
+; Physics source: meleelight (MIT © Will Blackett) — github.com/schmooblidon/meleelight
+; Raw meleelight Falcon stats: weight=104, gravity=0.13 u/f² (0.565× Fox's 0.23),
+;   terminalV≈2.9 u/f, fastFall=3.5 u/f, dashInit=2.16 u/f, dashMax=2.3 u/f,
+;   walkMax=0.85 u/f, jumpSquat=4 f, aerialAccelA=0.04, sHopInitV=1.9, fHopInitV=3.1.
+; Fox/Falcon gravity ratio = 0.13/0.23 = 0.565. Falcon gravity = 3500 × 0.565 = 1978 → 2000.
+;
+; Design intent:
+;   Heaviest fighter in the roster (104). Lower gravity than Fox but heavier weight —
+;   float-y in the air but tanks punishment on the ground. The fastest runner (RunSpeed > Fox)
+;   demands playing the neutral with movement, not shields. Iconic: run fast, hit hard,
+;   die early if you make mistakes (high weight mitigated by low traction + recovery options).
+;   Walk is very slow — all neutral is done via dash and dash-dance, not walking.
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/CharacterData.cs" id="Script_CharacterData"]
+
+[resource]
+script = ExtResource("Script_CharacterData")
+
+; ── Identity ──────────────────────────────────────────────────────────────────
+; Melee Captain Falcon = 104 weight. Heaviest in the roster — dies later than anyone.
+; Formula denominator (200/(104+100)) = 0.98. Takes ~2% LESS KB than mid-weight.
+Weight = 104.0
+
+; ── Ground Movement ───────────────────────────────────────────────────────────
+; meleelight: walkMax=0.85 (very slow), dashInit=2.16, dashMax=2.3 u/f.
+; Walk almost irrelevant — Falcon's neutral is ALL dash/run based.
+WalkSpeed = 310.0
+; Fox dashMax=2.2→790; Falcon dashMax=2.3→790×(2.3/2.2)=826 → 820.
+RunSpeed = 820.0
+; Fox dashInit=2.02→980; Falcon dashInit=2.16→980×(2.16/2.02)=1048 → 1050.
+InitialDashSpeed = 1050.0
+; Moderate traction — Falcon slides somewhat on stops, but not as much as Swordfighter.
+GroundFriction = 0.20
+TurnaroundFriction = 0.32
+
+; ── Dash & Dash-Dance ─────────────────────────────────────────────────────────
+; meleelight: dashMin=15, dashMax=28. Initial dash phase = 15 frames.
+InitialDashFrames = 15
+; Dash-dance window = dashMax - dashMin = 28 - 15 = 13 frames.
+DashDanceWindowFrames = 13
+FoxtrotCooldownFrames = 2
+
+; ── Jumping ───────────────────────────────────────────────────────────────────
+; meleelight jumpSquat=4. Same as Fox (3+1? confirmed as 4). Fast jump squat.
+; meleelight sHopInitV=1.9 (same as data; matches Fox), fHopInitV=3.1.
+; Lower gravity means jumps travel HIGHER — Falcon floats across the stage.
+JumpSquatFrames = 4
+FullHopVelocity = -1130.0
+ShortHopVelocity = -720.0
+; meleelight doubleJumpMultiplier=0.9 → 1130 × 0.9 = 1017.
+AirJumpVelocity = -1020.0
+MaxAirJumps = 1
+; Good momentum transfer — dash-jump carries run speed into the air.
+JumpMomentumTransfer = 0.85
+MaxHorizontalJumpSpeed = 720.0
+
+; ── Air Movement ──────────────────────────────────────────────────────────────
+; meleelight aerialAccelA=0.04 (Fox=0.10), aerialHmaxV=1.12.
+; Fair air speed, poor air acceleration — Falcon commits to aerial directions.
+; Smashwiki: Falcon air speed 1.12, Fox 1.32. Scale: 490×(1.12/1.32) = 416 → 420.
+AirSpeed = 420.0
+AirAcceleration = 0.04
+; meleelight aerial friction=0.01. Low friction = Falcon drifts far in the air.
+AirFriction = 0.010
+
+; ── Gravity & Fall ────────────────────────────────────────────────────────────
+; meleelight Falcon gravity = 0.13 u/f² (vs Fox 0.23). Ratio = 0.565.
+; Falcon gravity = 3500 × 0.565 = 1978 → 2000 px/s².
+; Lower gravity than Falco (2600) — Falcon floats visibly during jumps.
+Gravity = 2000.0
+; meleelight terminalV=2.9 u/f. Fox terminal=2.8→2500. Falcon = 2500×(2.9/2.8) = 2589 → 2600.
+MaxFallSpeed = 2600.0
+FastFallMultiplier = 1.75
+; meleelight fastFall=3.5 u/f. Fox fastFall=3.4→3800. Falcon = 3800×(3.5/3.4) = 3912 → 3900.
+FastFallMaxSpeed = 3900.0
+
+; ── Landing Lag ───────────────────────────────────────────────────────────────
+SoftLandingFrames = 2
+HelplessLandingFrames = 20
+LCancelMultiplier = 0.5
+
+; ── Ledge ─────────────────────────────────────────────────────────────────────
+; Larger hitbox for a bigger character.
+LedgeGrabBoxOffset = Vector2(18, -10)
+LedgeGrabBoxSize = Vector2(26, 42)
+LedgeHangInvincibilityFrames = 30
+LedgeRegrabCooldownFrames = 30
+LedgeGetupFrames = 25
+
+; ── Hurtbox Sizing ────────────────────────────────────────────────────────────
+; Tallest and widest hurtbox — Falcon is a big target. Easier to hit but hard to kill.
+StandingHurtboxSize = Vector2(40, 88)
+CrouchHurtboxSize = Vector2(44, 52)
+
+; ── Shield ────────────────────────────────────────────────────────────────────
+; Strongest shield in the roster — but Falcon isn't a shield character.
+; High health/low decay compensates for being a large target during shield.
+ShieldMaxHealth = 52.0
+ShieldDecayRate = 0.26
+ShieldRegenRate = 0.20
+ShieldBreakStunFrames = 180
+
+; ── Combat ────────────────────────────────────────────────────────────────────
+; Heavier hitlag on Falcon's hard-hitting strikes — each clean hit feels impactful.
+AttackerHitlagFrames = 4
+
+; ── Respawn ───────────────────────────────────────────────────────────────────
+SpawnInvincibilityFrames = 120

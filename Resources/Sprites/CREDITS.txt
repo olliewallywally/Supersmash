@@ -1,0 +1,21 @@
+Sprite Credits
+==============
+
+GDQuest game-sprites (CC0 - Public Domain)
+  https://github.com/GDQuest/game-sprites
+  Files: gdquest_blue.svg, gdquest_green.svg, gdquest_grey.svg,
+         gdquest_shadow.svg, gdquest_weapon_basic.svg, gdquest_weapon_stick.svg
+  License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
+
+Original sprites (CC0 - Public Domain)
+  Author: Supersmash project
+  Files: rushdown.svg, falco.svg, swordfighter.svg, captainfalcon.svg,
+         bruiser.svg, hit_spark.svg, shield_bubble.svg, platform_tile.svg
+  License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
+
+Character physics data derived from meleelight (MIT License)
+  https://github.com/schmooblidon/meleelight
+  Author: Will Blackett and contributors
+  License: MIT — https://github.com/schmooblidon/meleelight/blob/master/LICENSE
+  Note: Data values (gravity ratios, frame counts, hitbox parameters) were used
+        as reference; no source code from meleelight is included in this project.

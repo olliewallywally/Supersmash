@@ -1,0 +1,197 @@
+; Captain Falcon — AttackLibrary.
+; Frame data sourced from Super Smash Bros. Melee community documentation.
+; Hitbox values from meleelight (MIT © Will Blackett) — github.com/schmooblidon/meleelight
+;
+; Kit philosophy: Slow but devastating. Every clean hit carries KO threat.
+;   Jab        : frame 2 — fast poke. 80° angle keeps the opponent close for follow-up.
+;   ForwardTilt: frame 9 — mid-range poke. Combo starter at low/mid % (Sakurai angle).
+;   UpTilt     : frame 5 — anti-air. High BKB at 80° — juggle launcher above 60%.
+;   ForwardSmash: frame 14 — slow but lethal. 20% kills ~90% mid-stage.
+;   NeutralAir : frame 4 — aerial zoning. Mid-angle send for combo or edgeguard.
+;   ForwardAir : frame 14 — the KNEE. 18% kill confirm at 80%+. The signature move.
+;
+; Character identity:
+;   • Fastest run speed in the roster (820 px/s). Neutral is all dash-and-punish.
+;   • Every move is slow. The read has to come BEFORE the commitment.
+;   • ForwardAir (Knee) rewards deep reads: 14-frame startup, KO power at mid %.
+;   • Weight (104) eats punishment — Falcon often wins the damage race if he can
+;     land his hits.
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+
+; ── Jab ──────────────────────────────────────────────────────────────────────
+; Melee Falcon Jab1: frame 2 active, FAF 17. Rapid 3-hit jab in source game;
+; represented here as a single punch — fast, low-commitment option.
+; 80° keeps opponent close and slightly above for a follow-up dash.
+[sub_resource type="Resource" id="HitboxData_Jab"]
+script = ExtResource("Script_HitboxData")
+Damage = 3.0
+BaseKnockback = 20.0
+KnockbackGrowth = 100.0
+LaunchAngle = 80.0
+AngleFlipsWithFacing = true
+HitlagFrames = 2
+HitstunFrames = 8
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_Jab"]
+script = ExtResource("Script_AttackData")
+AttackId = "Jab"
+IsAerial = false
+StartupFrames = 1
+ActiveFrames = 2
+RecoveryFrames = 14
+HitboxNodeName = "JabHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_Jab")])
+HitstunMultiplier = 0.9
+
+; ── ForwardTilt ───────────────────────────────────────────────────────────────
+; Melee Falcon FTilt: frame 9, FAF 32. Solid mid-range poke. 11% damage.
+; Sakurai angle (→45°) sends horizontally — combo into dash-attack or another tilt
+; at low %, kills off-stage at higher %. BKB=10 ensures combo follow-ups stay in range.
+[sub_resource type="Resource" id="HitboxData_ForwardTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 11.0
+BaseKnockback = 10.0
+KnockbackGrowth = 100.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 6
+HitstunFrames = 18
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardTilt"
+IsAerial = false
+StartupFrames = 8
+ActiveFrames = 3
+RecoveryFrames = 21
+HitboxNodeName = "ForwardTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardTilt")])
+HitstunMultiplier = 1.0
+
+; ── UpTilt ────────────────────────────────────────────────────────────────────
+; Melee Falcon UTilt: frame 5, 5-frame active, FAF 33. Fast anti-air.
+; 13% with BKB=50 at 80° sends opponents upward for a chase. Juggle launcher above 60%.
+; AngleFlipsWithFacing=false — always sends straight up regardless of facing.
+[sub_resource type="Resource" id="HitboxData_UpTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 13.0
+BaseKnockback = 50.0
+KnockbackGrowth = 80.0
+LaunchAngle = 80.0
+AngleFlipsWithFacing = false
+HitlagFrames = 6
+HitstunFrames = 22
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_UpTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "UpTilt"
+IsAerial = false
+StartupFrames = 4
+ActiveFrames = 5
+RecoveryFrames = 24
+HitboxNodeName = "UpTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_UpTilt")])
+HitstunMultiplier = 1.0
+
+; ── ForwardSmash ─────────────────────────────────────────────────────────────
+; Melee Falcon FSmash: frame 14, FAF 58. 20% — the highest raw damage in the roster.
+; BKB=24, KBG=100: confirmed kills ~90% mid-stage. Slow enough that opponents
+; can react, so it must be landed as a read or after conditioning. VERY high reward.
+[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+script = ExtResource("Script_HitboxData")
+Damage = 20.0
+BaseKnockback = 24.0
+KnockbackGrowth = 100.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 10
+HitstunFrames = 34
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardSmash"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardSmash"
+IsAerial = false
+StartupFrames = 13
+ActiveFrames = 4
+RecoveryFrames = 41
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardSmash")])
+HitstunMultiplier = 1.05
+
+; ── NeutralAir ───────────────────────────────────────────────────────────────
+; Melee Falcon NAir: frame 4, 5-frame active, FAF 36. Mid-air coverage.
+; 6% clean hit, BKB=40 at 78° — sends at a consistent angle for edgeguarding.
+; AngleFlipsWithFacing=true: front-hit sends away, back-hit sends back through Falcon.
+[sub_resource type="Resource" id="HitboxData_NeutralAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 6.0
+BaseKnockback = 40.0
+KnockbackGrowth = 100.0
+LaunchAngle = 78.0
+AngleFlipsWithFacing = true
+HitlagFrames = 4
+HitstunFrames = 14
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralAir"
+IsAerial = true
+StartupFrames = 3
+ActiveFrames = 5
+RecoveryFrames = 28
+HitboxNodeName = "NairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralAir")])
+HitstunMultiplier = 1.0
+
+; ── ForwardAir — THE KNEE ─────────────────────────────────────────────────────
+; Melee Falcon FAir "Knee of Justice": frame 14 clean hit, FAF 44. SIGNATURE move.
+; 18% clean hit at 32° — deep horizontal send. Kills at 80%+ mid-stage. The
+; most iconic aerial in platform fighter history. 14-frame startup demands a hard read
+; or following an air-release; the payoff is an uncontested edge kill confirm.
+; IsAerial=true — aerial only. Land before or after, it must be committed in the air.
+[sub_resource type="Resource" id="HitboxData_ForwardAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 18.0
+BaseKnockback = 24.0
+KnockbackGrowth = 100.0
+LaunchAngle = 32.0
+AngleFlipsWithFacing = true
+HitlagFrames = 9
+HitstunFrames = 30
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardAir"
+IsAerial = true
+StartupFrames = 13
+ActiveFrames = 5
+RecoveryFrames = 26
+HitboxNodeName = "FairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardAir")])
+HitstunMultiplier = 1.1
+
+[resource]
+script = ExtResource("Script_AttackLibrary")
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardAir")])

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Swordfighter (Marth archetype) placeholder sprite. CC0 public domain. -->
+<!-- Tall and slender. Silver/navy Marth colour scheme. Sword visible at right side. -->
+<svg width="80" height="160" viewBox="0 0 80 160" version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+  <!-- Sword (behind body for visual layering) -->
+  <!-- Blade -->
+  <rect x="60" y="28" width="5" height="80" rx="2" fill="#D8E8FF" stroke="#8090C0" stroke-width="1"/>
+  <!-- Guard -->
+  <rect x="53" y="70" width="19" height="6" rx="2" fill="#C0A800" stroke="#907800" stroke-width="1"/>
+  <!-- Hilt -->
+  <rect x="57" y="76" width="7" height="20" rx="3" fill="#8B4513" stroke="#5a2800" stroke-width="1"/>
+  <!-- Pommel -->
+  <circle cx="60.5" cy="98" r="5" fill="#C0A800" stroke="#907800" stroke-width="1"/>
+
+  <!-- Head — slightly narrower / taller than Rushdown -->
+  <ellipse cx="30" cy="20" rx="13" ry="15" fill="#FFDAB9" stroke="#C0A060" stroke-width="2"/>
+  <!-- Hair (blue Marth hair) -->
+  <ellipse cx="30" cy="10" rx="13" ry="10" fill="#4060A0"/>
+  <rect x="17" y="5" width="26" height="12" fill="#4060A0"/>
+  <!-- Eyes -->
+  <circle cx="24" cy="20" r="2.5" fill="#2060C0"/>
+  <circle cx="36" cy="20" r="2.5" fill="#2060C0"/>
+  <!-- Body — taller than Rushdown (noble's frame) -->
+  <rect x="18" y="36" width="24" height="58" rx="7" fill="#2040C0" stroke="#102080" stroke-width="2"/>
+  <!-- Tunic front -->
+  <rect x="22" y="42" width="16" height="38" rx="4" fill="#3060E0"/>
+  <!-- Cape hint on left -->
+  <rect x="8" y="36" width="12" height="48" rx="5" fill="#C00000" stroke="#800000" stroke-width="1"/>
+  <!-- Left arm (cape side) -->
+  <rect x="6" y="38" width="10" height="28" rx="5" fill="#2040C0" stroke="#102080" stroke-width="1.5"/>
+  <!-- Right arm (sword arm, raised slightly) -->
+  <rect x="42" y="34" width="10" height="28" rx="5" fill="#2040C0" stroke="#102080" stroke-width="1.5"/>
+  <!-- Left leg -->
+  <rect x="19" y="94" width="9" height="44" rx="4" fill="#102080" stroke="#080040" stroke-width="1.5"/>
+  <!-- Right leg -->
+  <rect x="32" y="94" width="9" height="44" rx="4" fill="#102080" stroke="#080040" stroke-width="1.5"/>
+  <!-- Boots -->
+  <ellipse cx="23.5" cy="138" rx="10" ry="6" fill="#080040"/>
+  <ellipse cx="36.5" cy="138" rx="10" ry="6" fill="#080040"/>
+</svg>

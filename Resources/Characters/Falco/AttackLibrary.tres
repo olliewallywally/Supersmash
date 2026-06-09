@@ -1,0 +1,195 @@
+; Falco — AttackLibrary.
+; Frame data sourced from Super Smash Bros. Melee community documentation.
+; Hitbox values from meleelight (MIT © Will Blackett) — github.com/schmooblidon/meleelight
+;
+; Kit philosophy: Falco mirrors Fox but with distinct differences.
+;   Jab        : frame 2 — same speed as Fox. Combo into jab-lock at low %.
+;   ForwardTilt: frame 6 — faster than Fox (f8). Low BKB = links into itself or nair.
+;   UpTilt     : frame 5 — anti-air. 90° sends straight up. Re-tilt or nair follow-up.
+;   ForwardSmash: frame 9 — strong horizontal kill. Less travel distance than Fox.
+;   NeutralAir : frame 3 — long active window (9 frames). The combo/landing pressure tool.
+;   BackAir    : frame 4 — faster than Fox (f6). Primary kill tool off-stage.
+;
+; Key Falco identity:
+;   • Half the air mobility of Fox — punished hard for poor aerial spacing.
+;   • Shorter short hop — smaller SHFL window, demands higher execution.
+;   • Faster bair — rewards committing early to the back aerial.
+;   • Nair has 3× the active frames of Fox — platforms and landing covered longer.
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+
+; ── Jab ──────────────────────────────────────────────────────────────────────
+; Melee Falco Jab1: frame 2 active, FAF 16. 4% damage — poke and jab-lock starter.
+; Angle 70° keeps opponent close — links into Jab2/3 or dash-in follow-up.
+[sub_resource type="Resource" id="HitboxData_Jab"]
+script = ExtResource("Script_HitboxData")
+Damage = 4.0
+BaseKnockback = 10.0
+KnockbackGrowth = 100.0
+LaunchAngle = 70.0
+AngleFlipsWithFacing = true
+HitlagFrames = 2
+HitstunFrames = 8
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_Jab"]
+script = ExtResource("Script_AttackData")
+AttackId = "Jab"
+IsAerial = false
+StartupFrames = 1
+ActiveFrames = 2
+RecoveryFrames = 13
+HitboxNodeName = "JabHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_Jab")])
+HitstunMultiplier = 0.9
+
+; ── ForwardTilt ───────────────────────────────────────────────────────────────
+; Melee Falco FTilt: frame 6, FAF 26. BKB=0 — opponent stays on the ground.
+; Faster than Fox's f8. Key combo starter: links into dash-in attack or nair.
+; Angle 361 (Sakurai auto-link) → 45° in our system but very low BKB means
+; the real travel is determined by hitstun decay, keeping opponent grounded.
+[sub_resource type="Resource" id="HitboxData_ForwardTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 9.0
+BaseKnockback = 0.0
+KnockbackGrowth = 100.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 5
+HitstunFrames = 14
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardTilt"
+IsAerial = false
+StartupFrames = 5
+ActiveFrames = 3
+RecoveryFrames = 17
+HitboxNodeName = "ForwardTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardTilt")])
+HitstunMultiplier = 1.0
+
+; ── UpTilt ────────────────────────────────────────────────────────────────────
+; Melee Falco UTilt: frame 5, 6-frame active, FAF 33. Anti-air and juggle tool.
+; 90° sends straight up — consistent re-tilt or up-air/back-air follow at any %.
+; BKB=30 keeps this as a juggle starter rather than a kill move at reasonable %.
+[sub_resource type="Resource" id="HitboxData_UpTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 9.0
+BaseKnockback = 30.0
+KnockbackGrowth = 130.0
+LaunchAngle = 90.0
+AngleFlipsWithFacing = false
+HitlagFrames = 5
+HitstunFrames = 18
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_UpTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "UpTilt"
+IsAerial = false
+StartupFrames = 4
+ActiveFrames = 6
+RecoveryFrames = 23
+HitboxNodeName = "UpTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_UpTilt")])
+HitstunMultiplier = 1.0
+
+; ── ForwardSmash ─────────────────────────────────────────────────────────────
+; Melee Falco FSmash: frame 9, FAF 46. 17% damage — stronger than Fox's 16%.
+; BKB=40 gives more guaranteed knockback at low %. Kills ~95% mid-stage.
+; The slight vertical component (Angle=50°) makes it harder to DI than Fox's FSmash.
+[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+script = ExtResource("Script_HitboxData")
+Damage = 17.0
+BaseKnockback = 40.0
+KnockbackGrowth = 90.0
+LaunchAngle = 50.0
+AngleFlipsWithFacing = true
+HitlagFrames = 9
+HitstunFrames = 30
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardSmash"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardSmash"
+IsAerial = false
+StartupFrames = 8
+ActiveFrames = 4
+RecoveryFrames = 34
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardSmash")])
+HitstunMultiplier = 1.05
+
+; ── NeutralAir ───────────────────────────────────────────────────────────────
+; Melee Falco NAir: frame 3, 9-frame active window, FAF 38.
+; Long active window is the key difference from Fox (3 active vs 9 here).
+; Covers landing approaches and platform pressure for extended windows.
+; Combo tool at low/mid % — the aerial you throw out when committing to a landing.
+[sub_resource type="Resource" id="HitboxData_NeutralAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 9.0
+BaseKnockback = 20.0
+KnockbackGrowth = 80.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 5
+HitstunFrames = 16
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralAir"
+IsAerial = true
+StartupFrames = 2
+ActiveFrames = 9
+RecoveryFrames = 27
+HitboxNodeName = "NairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralAir")])
+HitstunMultiplier = 1.0
+
+; ── BackAir ───────────────────────────────────────────────────────────────────
+; Melee Falco BAir: frame 4, 4-frame active, FAF 34. Faster than Fox (f6).
+; 14% damage — primary kill aerial. Strong horizontal send for off-stage edgeguarding.
+; The speed advantage over Fox's bair is the reward for mastering Falco's shorter hop.
+[sub_resource type="Resource" id="HitboxData_BackAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 14.0
+BaseKnockback = 20.0
+KnockbackGrowth = 92.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 7
+HitstunFrames = 24
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_BackAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "BackAir"
+IsAerial = true
+StartupFrames = 3
+ActiveFrames = 4
+RecoveryFrames = 27
+HitboxNodeName = "BackAirHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_BackAir")])
+HitstunMultiplier = 1.0
+
+[resource]
+script = ExtResource("Script_AttackLibrary")
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_BackAir")])
