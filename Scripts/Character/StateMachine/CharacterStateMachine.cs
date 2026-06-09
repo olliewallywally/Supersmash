@@ -30,7 +30,10 @@ public partial class CharacterStateMachine : Node
 
     // ── State registry ────────────────────────────────────────────────────────
 
-    private readonly Dictionary<string, State> _states = new();
+    // Fully qualified: this file imports both Godot.Collections (for the msg
+    // Dictionary in TransitionTo) and System.Collections.Generic, and both
+    // define a generic Dictionary<,> — the bare name is ambiguous to the compiler.
+    private readonly System.Collections.Generic.Dictionary<string, State> _states = new();
     private State? _currentState;
 
     // ── Public read-only state ────────────────────────────────────────────────
