@@ -1,0 +1,213 @@
+[gd_resource type="SpriteFrames" load_steps=90 format=3]
+
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-idle-00.png" id="idle0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-idle-01.png" id="idle1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-idle-02.png" id="idle2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-idle-03.png" id="idle3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-run3-00.png" id="run0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-run3-01.png" id="run1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-run3-02.png" id="run2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-run3-03.png" id="run3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-run3-04.png" id="run4"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-run3-05.png" id="run5"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-jump-00.png" id="jmp0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-jump-01.png" id="jmp1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-jump-02.png" id="jmp2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-jump-03.png" id="jmp3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-fall-00.png" id="fal0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-fall-01.png" id="fal1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-hurt-00.png" id="hrt0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-hurt-01.png" id="hrt1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-hurt-02.png" id="hrt2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-smrslt-00.png" id="slt0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-smrslt-01.png" id="slt1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-smrslt-02.png" id="slt2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-smrslt-03.png" id="slt3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-stand-00.png" id="std0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-stand-01.png" id="std1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-stand-02.png" id="std2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-knock-dwn-00.png" id="kd0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-knock-dwn-01.png" id="kd1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-knock-dwn-02.png" id="kd2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-knock-dwn-03.png" id="kd3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-knock-dwn-04.png" id="kd4"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-knock-dwn-05.png" id="kd5"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-knock-dwn-06.png" id="kd6"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-get-up-00.png" id="gu0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-get-up-01.png" id="gu1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-get-up-02.png" id="gu2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-get-up-03.png" id="gu3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-get-up-04.png" id="gu4"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-get-up-05.png" id="gu5"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-get-up-06.png" id="gu6"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-grb-00.png" id="lg0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-grb-01.png" id="lg1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-grb-02.png" id="lg2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-grb-03.png" id="lg3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-clmb-00.png" id="lc0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-clmb-01.png" id="lc1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-clmb-02.png" id="lc2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-clmb-03.png" id="lc3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crnr-clmb-04.png" id="lc4"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack1-00.png" id="a10"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack1-01.png" id="a11"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack1-02.png" id="a12"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack1-03.png" id="a13"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack1-04.png" id="a14"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack2-00.png" id="a20"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack2-01.png" id="a21"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack2-02.png" id="a22"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack2-03.png" id="a23"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack2-04.png" id="a24"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack2-05.png" id="a25"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack3-00.png" id="a30"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack3-01.png" id="a31"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack3-02.png" id="a32"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack3-03.png" id="a33"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack3-04.png" id="a34"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-attack3-05.png" id="a35"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-00.png" id="kk0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-01.png" id="kk1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-02.png" id="kk2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-03.png" id="kk3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-04.png" id="kk4"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-05.png" id="kk5"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-06.png" id="kk6"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-kick-07.png" id="kk7"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-air-attack1-00.png" id="aa10"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-air-attack1-01.png" id="aa11"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-air-attack1-02.png" id="aa12"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-air-attack1-03.png" id="aa13"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-air-attack2-00.png" id="aa20"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-air-attack2-01.png" id="aa21"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-air-attack2-02.png" id="aa22"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-drop-kick-00.png" id="dk0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-drop-kick-01.png" id="dk1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-drop-kick-02.png" id="dk2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-drop-kick-03.png" id="dk3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-cast-00.png" id="cs0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-cast-01.png" id="cs1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-cast-02.png" id="cs2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-cast-03.png" id="cs3"]
+
+[resource]
+animations = [{
+"frames": [{"duration": 1.0, "texture": ExtResource("idle0")}, {"duration": 1.0, "texture": ExtResource("idle1")}, {"duration": 1.0, "texture": ExtResource("idle2")}, {"duration": 1.0, "texture": ExtResource("idle3")}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("run0")}, {"duration": 1.0, "texture": ExtResource("run1")}, {"duration": 1.0, "texture": ExtResource("run2")}, {"duration": 1.0, "texture": ExtResource("run3")}, {"duration": 1.0, "texture": ExtResource("run4")}, {"duration": 1.0, "texture": ExtResource("run5")}],
+"loop": true,
+"name": &"run",
+"speed": 12.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("jmp0")}, {"duration": 1.0, "texture": ExtResource("jmp1")}],
+"loop": false,
+"name": &"jumpsquat",
+"speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("jmp2")}, {"duration": 1.0, "texture": ExtResource("jmp3")}],
+"loop": false,
+"name": &"jump_rise",
+"speed": 8.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("fal0")}, {"duration": 1.0, "texture": ExtResource("fal1")}],
+"loop": true,
+"name": &"fall",
+"speed": 8.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("hrt0")}, {"duration": 1.0, "texture": ExtResource("hrt1")}, {"duration": 1.0, "texture": ExtResource("hrt2")}],
+"loop": false,
+"name": &"hitstun",
+"speed": 10.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("slt0")}, {"duration": 1.0, "texture": ExtResource("slt1")}, {"duration": 1.0, "texture": ExtResource("slt2")}, {"duration": 1.0, "texture": ExtResource("slt3")}],
+"loop": true,
+"name": &"helpless",
+"speed": 10.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("std0")}, {"duration": 1.0, "texture": ExtResource("std1")}, {"duration": 1.0, "texture": ExtResource("std2")}],
+"loop": false,
+"name": &"respawn",
+"speed": 8.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("kd0")}, {"duration": 1.0, "texture": ExtResource("kd1")}, {"duration": 1.0, "texture": ExtResource("kd2")}, {"duration": 1.0, "texture": ExtResource("kd3")}, {"duration": 1.0, "texture": ExtResource("kd4")}, {"duration": 1.0, "texture": ExtResource("kd5")}, {"duration": 1.0, "texture": ExtResource("kd6")}],
+"loop": false,
+"name": &"knock_down",
+"speed": 10.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("gu0")}, {"duration": 1.0, "texture": ExtResource("gu1")}, {"duration": 1.0, "texture": ExtResource("gu2")}, {"duration": 1.0, "texture": ExtResource("gu3")}, {"duration": 1.0, "texture": ExtResource("gu4")}, {"duration": 1.0, "texture": ExtResource("gu5")}, {"duration": 1.0, "texture": ExtResource("gu6")}],
+"loop": false,
+"name": &"get_up",
+"speed": 10.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("lg0")}, {"duration": 1.0, "texture": ExtResource("lg1")}, {"duration": 1.0, "texture": ExtResource("lg2")}, {"duration": 1.0, "texture": ExtResource("lg3")}],
+"loop": true,
+"name": &"ledge_hang",
+"speed": 8.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("lc0")}, {"duration": 1.0, "texture": ExtResource("lc1")}, {"duration": 1.0, "texture": ExtResource("lc2")}, {"duration": 1.0, "texture": ExtResource("lc3")}, {"duration": 1.0, "texture": ExtResource("lc4")}],
+"loop": false,
+"name": &"ledge_climb",
+"speed": 12.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("a10")}, {"duration": 1.0, "texture": ExtResource("a11")}, {"duration": 1.0, "texture": ExtResource("a12")}, {"duration": 1.0, "texture": ExtResource("a13")}, {"duration": 1.0, "texture": ExtResource("a14")}],
+"loop": false,
+"name": &"attack_Jab",
+"speed": 18.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("a20")}, {"duration": 1.0, "texture": ExtResource("a21")}, {"duration": 1.0, "texture": ExtResource("a22")}, {"duration": 1.0, "texture": ExtResource("a23")}, {"duration": 1.0, "texture": ExtResource("a24")}, {"duration": 1.0, "texture": ExtResource("a25")}],
+"loop": false,
+"name": &"attack_ForwardTilt",
+"speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("a30")}, {"duration": 1.0, "texture": ExtResource("a31")}, {"duration": 1.0, "texture": ExtResource("a32")}, {"duration": 1.0, "texture": ExtResource("a33")}, {"duration": 1.0, "texture": ExtResource("a34")}, {"duration": 1.0, "texture": ExtResource("a35")}],
+"loop": false,
+"name": &"attack_UpTilt",
+"speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("kk0")}, {"duration": 1.0, "texture": ExtResource("kk1")}, {"duration": 1.0, "texture": ExtResource("kk2")}, {"duration": 1.0, "texture": ExtResource("kk3")}, {"duration": 1.0, "texture": ExtResource("kk4")}, {"duration": 1.0, "texture": ExtResource("kk5")}, {"duration": 1.0, "texture": ExtResource("kk6")}, {"duration": 1.0, "texture": ExtResource("kk7")}],
+"loop": false,
+"name": &"attack_ForwardSmash",
+"speed": 11.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("aa10")}, {"duration": 1.0, "texture": ExtResource("aa11")}, {"duration": 1.0, "texture": ExtResource("aa12")}, {"duration": 1.0, "texture": ExtResource("aa13")}],
+"loop": false,
+"name": &"attack_NeutralAir",
+"speed": 12.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("aa20")}, {"duration": 1.0, "texture": ExtResource("aa21")}, {"duration": 1.0, "texture": ExtResource("aa22")}],
+"loop": false,
+"name": &"attack_ForwardAir",
+"speed": 12.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("dk0")}, {"duration": 1.0, "texture": ExtResource("dk1")}, {"duration": 1.0, "texture": ExtResource("dk2")}, {"duration": 1.0, "texture": ExtResource("dk3")}],
+"loop": false,
+"name": &"attack_BackAir",
+"speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("cs0")}, {"duration": 1.0, "texture": ExtResource("cs1")}, {"duration": 1.0, "texture": ExtResource("cs2")}, {"duration": 1.0, "texture": ExtResource("cs3")}],
+"loop": false,
+"name": &"cast",
+"speed": 8.0
+}]

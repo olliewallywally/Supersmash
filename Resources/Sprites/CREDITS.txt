@@ -1,5 +1,26 @@
-Sprite Credits
-==============
+Asset Credits
+=============
+
+Animated Adventurer sprites (CC BY 4.0)
+  https://rvros.itch.io/animated-pixel-hero
+  Author: rvros
+  License: Creative Commons Attribution 4.0 — https://creativecommons.org/licenses/by/4.0/
+  Packs used: Adventurer v1.5, Adventurer Hand Combat, Adventurer Bow, Run3 (sword)
+  Files: Resources/Sprites/Characters/Adventurer/adventurer-*.png
+  SpriteFrames: Resources/SpriteFrames/adventurer_base.tres
+
+Kenney Impact Sounds (CC0 - Public Domain)
+  https://kenney.nl/assets/impact-sounds
+  Author: Kenney (kenney.nl)
+  License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
+  Files: Resources/Audio/SFX/Impact/*.ogg
+
+Kenney Input Prompts 1.5 (CC0 - Public Domain)
+  https://kenney.nl/assets/input-prompts
+  Author: Kenney (kenney.nl)
+  License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
+  Files: Resources/Sprites/UI/InputPrompts/Switch/*.png
+         Resources/Sprites/UI/InputPrompts/Keyboard/*.png
 
 GDQuest game-sprites (CC0 - Public Domain)
   https://github.com/GDQuest/game-sprites
@@ -7,7 +28,7 @@ GDQuest game-sprites (CC0 - Public Domain)
          gdquest_shadow.svg, gdquest_weapon_basic.svg, gdquest_weapon_stick.svg
   License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
 
-Original sprites (CC0 - Public Domain)
+Original placeholder sprites (CC0 - Public Domain)
   Author: Supersmash project
   Files: rushdown.svg, falco.svg, swordfighter.svg, captainfalcon.svg,
          bruiser.svg, hit_spark.svg, shield_bubble.svg, platform_tile.svg
@@ -17,5 +38,5 @@ Character physics data derived from meleelight (MIT License)
   https://github.com/schmooblidon/meleelight
   Author: Will Blackett and contributors
   License: MIT — https://github.com/schmooblidon/meleelight/blob/master/LICENSE
-  Note: Data values (gravity ratios, frame counts, hitbox parameters) were used
+  Note: Data values only (gravity ratios, frame counts, hitbox parameters) used
         as reference; no source code from meleelight is included in this project.

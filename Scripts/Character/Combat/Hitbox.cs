@@ -78,6 +78,7 @@ public partial class Hitbox : Area2D
         EmitSignal(SignalName.HitConfirmed, target, Data);
 
         SpawnHitSpark(area.GlobalPosition);
+        AudioManager.PlayHitSound(GetTree(), Data.Damage);
     }
 
     private void SpawnHitSpark(Vector2 hurtboxPosition)

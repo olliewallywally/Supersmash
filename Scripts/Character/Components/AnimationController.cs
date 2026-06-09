@@ -4,52 +4,49 @@ using System.Collections.Generic;
 namespace Supersmash;
 
 /// <summary>
-/// Drives AnimationPlayer and visual facing based on FSM state changes.
+/// Drives AnimatedSprite2D and visual facing based on FSM state changes.
 /// Completely decoupled from physics: states know nothing about this component.
 ///
 /// ── Why states don't call animations directly ─────────────────────────────
-/// If animation calls lived in PhysicsUpdate/Enter, every state would import
-/// a rendering type, breaking in headless servers and making states harder to
-/// unit-test. Instead, this component subscribes to FSM.StateChanged and reacts.
-/// Physics stays pure; rendering stays separate.
+/// Separating animation from physics means states are headless-server-safe and
+/// trivially unit-testable. This component subscribes to FSM.StateChanged.
 ///
 /// ── Required scene structure ──────────────────────────────────────────────
 ///   CharacterController (CharacterBody2D)
-///   ├── VisualRoot (Node2D)          ← export this; scale-flipped for facing
-///   │   ├── Sprite2D / Mesh
-///   │   └── AnimationPlayer          ← export this
-///   ├── AnimationController (Node)   ← this script
-///   ├── HurtboxContainer (Hurtbox)   ← NOT under VisualRoot (must not flip)
-///   └── JabHitbox (Hitbox)           ← NOT under VisualRoot
+///   ├── VisualRoot (Node2D)              ← export; scale-flipped for facing
+///   │   └── AnimatedSprite2D             ← export; holds SpriteFrames resource
+///   ├── AnimationController (Node)       ← this script
+///   ├── HurtboxContainer (Hurtbox)
+///   └── JabHitbox (Hitbox)
 ///
-/// Hitboxes must be direct children of CharacterController (or a non-visual
-/// subtree). VisualRoot.Scale.X = –1 mirrors the sprite without moving boxes.
+/// Hitboxes must be siblings of VisualRoot (not children) so the X-flip that
+/// mirrors the sprite does not also mirror the hitbox positions.
 ///
 /// ── Animation naming convention ───────────────────────────────────────────
 ///   State animations : "idle", "run", "jumpsquat", "jump_rise", "fall",
-///                      "hitstun", "helpless"
+///                      "hitstun", "helpless", "respawn"
 ///   Attack animations: "attack_" + AttackId  →  "attack_Jab", "attack_NeutralAir"
+///   These names must match entries in the SpriteFrames resource assigned in the
+///   inspector (res://Resources/SpriteFrames/adventurer_base.tres).
 ///
-/// ── AnimationPlayer settings (set in Godot inspector) ────────────────────
-///   • Process Mode → Physics   (ensures 1 anim tick = 1 physics tick)
-///   • Speed Scale  → 1.0
+/// ── Hitstop (freeze-frame) ────────────────────────────────────────────────
+///   SetPaused(true)  → SpeedScale = 0  (holds the current frame in place)
+///   SetPaused(false) → SpeedScale = 1  (resumes from the same frame)
 /// </summary>
 public partial class AnimationController : Node
 {
     // ── Inspector exports ─────────────────────────────────────────────────────
 
-    [Export] private AnimationPlayer? _animationPlayer;
+    [Export] private AnimatedSprite2D? _sprite;
 
     /// Scale-flipped each tick to reflect FacingDirection changes.
     /// Must NOT be an ancestor of hitbox/hurtbox nodes.
     [Export] private Node2D? _visualRoot;
 
-    /// Animation played when a state has no registered mapping and the requested
-    /// animation does not exist.
     [Export] private string _fallbackAnimation { get; set; } = "idle";
 
     // ── State → animation name table ─────────────────────────────────────────
-    // Protected so character-specific subclasses can override entries in _Ready.
+    // Protected so character-specific subclasses can add/override entries.
 
     protected readonly Dictionary<string, string> StateAnimations = new()
     {
@@ -60,19 +57,20 @@ public partial class AnimationController : Node
         { "FallState",      "fall"      },
         { "HitstunState",   "hitstun"   },
         { "HelplessState",  "helpless"  },
-        { "AttackState",    ""          }, // resolved per-attack in OnStateChanged
+        { "RespawnState",   "respawn"   },
+        { "AttackState",    ""          }, // resolved per-attack below
     };
 
     // ── Internal ──────────────────────────────────────────────────────────────
 
     private CharacterController _character = null!;
-    private int _lastFacingDirection = 1;
+    private int    _lastFacingDirection = 1;
+    private string _pendingAnimation    = string.Empty;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public override void _Ready()
     {
-        // Defer until CharacterController._Ready() has populated the FSM reference.
         CallDeferred(MethodName.LateInit);
     }
 
@@ -81,12 +79,18 @@ public partial class AnimationController : Node
         _character           = GetParent<CharacterController>();
         _lastFacingDirection = _character.FacingDirection;
         _character.FSM.StateChanged += OnStateChanged;
+
+        if (_sprite is not null)
+            _sprite.AnimationFinished += OnAnimationFinished;
     }
 
     public override void _ExitTree()
     {
         if (_character?.FSM is not null)
             _character.FSM.StateChanged -= OnStateChanged;
+
+        if (_sprite is not null)
+            _sprite.AnimationFinished -= OnAnimationFinished;
     }
 
     // ── Facing direction (per-tick) ───────────────────────────────────────────
@@ -94,25 +98,20 @@ public partial class AnimationController : Node
     public override void _PhysicsProcess(double delta)
     {
         if (_visualRoot is null || _character is null) return;
-
         if (_character.FacingDirection == _lastFacingDirection) return;
 
         _lastFacingDirection = _character.FacingDirection;
-        // Scale.X = –1 mirrors the sprite/mesh for left-facing without touching
-        // hitbox positions (boxes are siblings, not children, of VisualRoot).
-        _visualRoot.Scale = new Vector2(_character.FacingDirection, 1f);
+        _visualRoot.Scale    = new Vector2(_character.FacingDirection, 1f);
     }
 
     // ── FSM signal handler ────────────────────────────────────────────────────
 
     private void OnStateChanged(string from, string to)
     {
-        if (_animationPlayer is null) return;
+        if (_sprite is null) return;
 
         if (to == "AttackState" && _character.FSM.CurrentState is AttackState attackState)
         {
-            // Attack animations are keyed "attack_<AttackId>" so each move
-            // can have its own authored timing without extra lookup tables.
             Play("attack_" + attackState.CurrentAttackId);
             return;
         }
@@ -121,43 +120,51 @@ public partial class AnimationController : Node
             Play(anim);
     }
 
+    // ── Animation finished handler ────────────────────────────────────────────
+
+    private void OnAnimationFinished()
+    {
+        if (string.IsNullOrEmpty(_pendingAnimation)) return;
+        string next     = _pendingAnimation;
+        _pendingAnimation = string.Empty;
+        Play(next);
+    }
+
     // ── Public API ────────────────────────────────────────────────────────────
 
-    /// Play an animation by name. Falls back to _fallbackAnimation if not found.
+    /// Play an animation immediately. Falls back to _fallbackAnimation if not found.
     public void Play(string animName)
     {
-        if (_animationPlayer is null) return;
+        if (_sprite is null) return;
 
-        if (_animationPlayer.HasAnimation(animName))
+        StringName name = animName;
+        if (_sprite.SpriteFrames?.HasAnimation(name) == true)
         {
-            _animationPlayer.Play(animName);
+            _sprite.Play(name);
             return;
         }
 
-        GD.PushWarning($"[AnimationController] '{Character?.Name}' has no animation '{animName}'.");
+        GD.PushWarning($"[AnimationController] '{_character?.Name}' has no animation '{animName}'.");
 
-        if (!string.IsNullOrEmpty(_fallbackAnimation) && _animationPlayer.HasAnimation(_fallbackAnimation))
-            _animationPlayer.Play(_fallbackAnimation);
+        if (!string.IsNullOrEmpty(_fallbackAnimation))
+        {
+            StringName fallback = _fallbackAnimation;
+            if (_sprite.SpriteFrames?.HasAnimation(fallback) == true)
+                _sprite.Play(fallback);
+        }
     }
 
-    /// Queue an animation to play after the current one finishes.
+    /// Queue an animation to play after the current one finishes (non-looping only).
     public void Queue(string animName)
     {
-        if (_animationPlayer?.HasAnimation(animName) == true)
-            _animationPlayer.Queue(animName);
+        _pendingAnimation = animName;
     }
 
-    /// Freeze (SpeedScale → 0) or unfreeze (SpeedScale → 1) the AnimationPlayer.
+    /// Freeze (SpeedScale → 0) or unfreeze (SpeedScale → 1).
     /// Called by HitstopManager (attacker) and HitstunState (defender) around hitlag.
-    /// SpeedScale=0 holds the current frame in place without stopping playback state,
-    /// so resuming at SpeedScale=1 continues from exactly the same frame.
     public void SetPaused(bool paused)
     {
-        if (_animationPlayer is null) return;
-        _animationPlayer.SpeedScale = paused ? 0f : 1f;
+        if (_sprite is null) return;
+        _sprite.SpeedScale = paused ? 0f : 1f;
     }
-
-    // Helper so callers don't need a direct reference to the controller.
-    private CharacterController? Character =>
-        _character ??= GetParentOrNull<CharacterController>();
 }
