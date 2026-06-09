@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/Projectile.cs" id="1_script"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs" id="2_hbdata"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Effects/laser_bolt.svg" id="3_sprite"]
+
+[sub_resource type="Resource" id="HitboxData_Laser"]
+script = ExtResource("2_hbdata")
+Damage = 3.0
+BaseKnockback = 6.0
+KnockbackGrowth = 10.0
+LaunchAngle = 0.0
+AngleFlipsWithFacing = true
+HitlagFrames = 2
+HitstunFrames = 10
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="RectangleShape2D" id="Shape_Laser"]
+size = Vector2(40, 8)
+
+[node name="Laser" type="Area2D"]
+script = ExtResource("1_script")
+collision_layer = 1
+collision_mask = 2
+Speed = 900.0
+GravityScale = 0.0
+Lifetime = 1.2
+MaxHits = 1
+HitstunMultiplier = 1.0
+HitboxInfo = SubResource("HitboxData_Laser")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape_Laser")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_sprite")

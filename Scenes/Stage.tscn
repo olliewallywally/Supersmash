@@ -1,0 +1,159 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Stage/BlastZone.cs" id="s_blast"]
+[ext_resource type="Script" path="res://Scripts/Stage/LedgeZone.cs" id="s_ledge"]
+[ext_resource type="Script" path="res://Scripts/Stage/DynamicCamera2D.cs" id="s_camera"]
+
+[sub_resource type="RectangleShape2D" id="shape_floor"]
+size = Vector2(1400, 60)
+
+[sub_resource type="RectangleShape2D" id="shape_plat"]
+size = Vector2(240, 16)
+
+[sub_resource type="RectangleShape2D" id="shape_blast_h"]
+size = Vector2(5000, 100)
+
+[sub_resource type="RectangleShape2D" id="shape_blast_v"]
+size = Vector2(100, 4000)
+
+[sub_resource type="RectangleShape2D" id="shape_ledge"]
+size = Vector2(44, 90)
+
+[sub_resource type="Gradient" id="grad_sky"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.08, 0.09, 0.18, 1, 0.22, 0.16, 0.35, 1)
+
+[sub_resource type="GradientTexture2D" id="tex_sky"]
+gradient = SubResource("grad_sky")
+fill_to = Vector2(0, 1)
+
+[node name="Stage" type="Node2D"]
+
+[node name="Sky" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(0, -100)
+scale = Vector2(70, 40)
+texture = SubResource("tex_sky")
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(0, 330)
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("shape_floor")
+
+[node name="Visual" type="Polygon2D" parent="Floor"]
+color = Color(0.32, 0.25, 0.18, 1)
+polygon = PackedVector2Array(-700, -30, 700, -30, 700, 30, -700, 30)
+
+[node name="VisualTop" type="Polygon2D" parent="Floor"]
+color = Color(0.42, 0.62, 0.28, 1)
+polygon = PackedVector2Array(-700, -30, 700, -30, 700, -18, -700, -18)
+
+[node name="PlatformLeft" type="StaticBody2D" parent="."]
+position = Vector2(-280, 80)
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformLeft"]
+shape = SubResource("shape_plat")
+one_way_collision = true
+
+[node name="Visual" type="Polygon2D" parent="PlatformLeft"]
+color = Color(0.5, 0.42, 0.3, 1)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
+
+[node name="PlatformRight" type="StaticBody2D" parent="."]
+position = Vector2(280, 80)
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformRight"]
+shape = SubResource("shape_plat")
+one_way_collision = true
+
+[node name="Visual" type="Polygon2D" parent="PlatformRight"]
+color = Color(0.5, 0.42, 0.3, 1)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
+
+[node name="PlatformTop" type="StaticBody2D" parent="."]
+position = Vector2(0, -140)
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformTop"]
+shape = SubResource("shape_plat")
+one_way_collision = true
+
+[node name="Visual" type="Polygon2D" parent="PlatformTop"]
+color = Color(0.5, 0.42, 0.3, 1)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
+
+[node name="BlastTop" type="Area2D" parent="."]
+position = Vector2(0, -1300)
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("s_blast")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlastTop"]
+shape = SubResource("shape_blast_h")
+
+[node name="BlastBottom" type="Area2D" parent="."]
+position = Vector2(0, 1100)
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("s_blast")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlastBottom"]
+shape = SubResource("shape_blast_h")
+
+[node name="BlastLeft" type="Area2D" parent="."]
+position = Vector2(-2000, 0)
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("s_blast")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlastLeft"]
+shape = SubResource("shape_blast_v")
+
+[node name="BlastRight" type="Area2D" parent="."]
+position = Vector2(2000, 0)
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("s_blast")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlastRight"]
+shape = SubResource("shape_blast_v")
+
+[node name="LedgeLeft" type="Area2D" parent="."]
+position = Vector2(-722, 330)
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("s_ledge")
+Facing = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LedgeLeft"]
+shape = SubResource("shape_ledge")
+
+[node name="LedgeRight" type="Area2D" parent="."]
+position = Vector2(722, 330)
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("s_ledge")
+Facing = -1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LedgeRight"]
+shape = SubResource("shape_ledge")
+
+[node name="SpawnPoint0" type="Marker2D" parent="."]
+position = Vector2(-250, 60)
+
+[node name="SpawnPoint1" type="Marker2D" parent="."]
+position = Vector2(250, 60)
+
+[node name="Camera" type="Camera2D" parent="."]
+process_callback = 0
+script = ExtResource("s_camera")
+MinZoom = 0.45
+MaxZoom = 1.1

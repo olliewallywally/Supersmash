@@ -15,11 +15,12 @@
 ;   • Shorter short hop — smaller SHFL window, demands higher execution.
 ;   • Faster bair — rewards committing early to the back aerial.
 ;   • Nair has 3× the active frames of Fox — platforms and landing covered longer.
-[gd_resource type="Resource" script_class="AttackLibrary" load_steps=18 format=3]
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+[ext_resource type="PackedScene" path="res://Scenes/Projectiles/Laser.tscn"        id="Scene_Laser"]
 
 ; ── Jab ──────────────────────────────────────────────────────────────────────
 ; Melee Falco Jab1: frame 2 active, FAF 16. 4% damage — poke and jab-lock starter.
@@ -189,6 +190,24 @@ RecoveryFrames = 27
 HitboxNodeName = "BackAirHitbox"
 Hitboxes = Array[Resource]([SubResource("HitboxData_BackAir")])
 HitstunMultiplier = 1.0
+
+
+; ── NeutralSpecial — Blaster ─────────────────────────────────────────────────
+; Laser: fast, no melee hitbox, all damage on the projectile (3%, low KB).
+; Usable on the ground AND in the air (AttackState branches physics on where the
+; attack started, not on IsAerial). Chip damage builds percent; never kills.
+[sub_resource type="Resource" id="AttackData_NeutralSpecial"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralSpecial"
+IsAerial = true
+StartupFrames = 7
+ActiveFrames = 1
+RecoveryFrames = 12
+HitboxNodeName = ""
+Hitboxes = Array[Resource]([])
+HitstunMultiplier = 1.0
+ProjectileScene = ExtResource("Scene_Laser")
+ProjectileSpawnOffset = Vector2(44, -16)
 
 [resource]
 script = ExtResource("Script_AttackLibrary")

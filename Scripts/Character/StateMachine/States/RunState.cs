@@ -19,12 +19,43 @@ public partial class RunState : State
             return;
         }
 
+        if (input.IsBuffered(GameAction.Shield))
+        {
+            FSM.TransitionTo("ShieldState");
+            return;
+        }
+
+        if (input.IsBuffered(GameAction.Grab))
+        {
+            input.Consume(GameAction.Grab);
+            FSM.TransitionTo("GrabState");
+            return;
+        }
+
+        if (input.IsBuffered(GameAction.Dodge))
+        {
+            input.Consume(GameAction.Dodge);
+            // Dodging while running is always a roll, in the direction of travel.
+            int dir = Character.CharacterVelocity.X >= 0f ? 1 : -1;
+            FSM.TransitionTo("DodgeState", new Dictionary { { "kind", "roll" }, { "dir", dir } });
+            return;
+        }
+
+        if (input.IsBuffered(GameAction.Special))
+        {
+            input.Consume(GameAction.Special);
+            if (Character.Attacks?.Get("NeutralSpecial") is not null)
+            {
+                FSM.TransitionTo("AttackState", "attack_type", "NeutralSpecial");
+                return;
+            }
+        }
+
         if (input.IsBuffered(GameAction.Attack))
         {
             input.Consume(GameAction.Attack);
-            // Smash attack if strong input, tilt otherwise — placeholder logic.
-            string type = Mathf.Abs(input.MoveStick.X) > 0.85f ? "ForwardSmash" : "ForwardTilt";
-            FSM.TransitionTo("AttackState", "attack_type", type);
+            FSM.TransitionTo("AttackState", "attack_type",
+                AttackState.PickGrounded(Character, input.MoveStick));
             return;
         }
 

@@ -35,9 +35,8 @@ public partial class HelplessState : State
 
         if (Character.IsOnFloor())
         {
-            // Landing from helpless has extra landing lag (passed to IdleState if needed).
-            Character.AirJumpsRemaining = Character.Data.MaxAirJumps;
-            FSM.TransitionTo("IdleState");
+            // Landing from helpless carries the full punishing landing lag.
+            FSM.TransitionTo("LandingState", "lag_frames", Character.Data.HelplessLandingFrames);
             return;
         }
 

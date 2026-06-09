@@ -24,9 +24,11 @@ public partial class CharacterController : CharacterBody2D
 {
     // ── Inspector ─────────────────────────────────────────────────────────────
 
-    [Export] public CharacterData Data    { get; private set; } = null!;
-    [Export] public AttackLibrary? Attacks { get; private set; }
-    [Export] public int PlayerIndex       { get; set; }         = 0;
+    // Setters are public so MatchManager can configure a Fighter.tscn instance
+    // (archetype data, library, player slot) in code before adding it to the tree.
+    [Export] public CharacterData Data    { get; set; } = null!;
+    [Export] public AttackLibrary? Attacks { get; set; }
+    [Export] public int PlayerIndex       { get; set; } = 0;
 
     // ── Component references (resolved in _Ready) ─────────────────────────────
 
@@ -37,6 +39,9 @@ public partial class CharacterController : CharacterBody2D
     public Hurtbox               HurtboxContainer { get; private set; } = null!;
     /// Null until _Ready runs. Always check before calling SetPaused / Play.
     public AnimationController?  AnimController   { get; private set; }
+    /// Optional shield node. Null if this character scene has no ShieldComponent;
+    /// states must null-check before shielding.
+    public ShieldComponent?      Shield           { get; private set; }
 
     // ── Shared physics state (read/written by states & components) ────────────
 
@@ -89,15 +94,31 @@ public partial class CharacterController : CharacterBody2D
         Combat           = GetNode<CombatComponent>("CombatComponent");
         HurtboxContainer = GetNode<Hurtbox>("HurtboxContainer");
         AnimController   = GetNodeOrNull<AnimationController>("AnimationController");
+        Shield           = GetNodeOrNull<ShieldComponent>("ShieldComponent");
 
         Input.PlayerIndex    = PlayerIndex;
         AirJumpsRemaining    = Data.MaxAirJumps;
+
+        _hitboxRoot = GetNodeOrNull<Node2D>("HitboxRoot");
 
         // Stamp every hitbox we own with a back-reference to this controller, so a
         // confirmed hit can be attributed to us (and self-hits filtered out).
         foreach (Hitbox hitbox in FindHitboxes(this))
             hitbox.AttackerRef = this;
     }
+
+    // ── Combat node resolution ────────────────────────────────────────────────
+
+    /// All hitboxes and the GrabBox live under this container, which is X-flipped
+    /// with FacingDirection so attack positions always mirror correctly. It must
+    /// NOT be under VisualRoot — AnimationController flips that independently.
+    private Node2D? _hitboxRoot;
+
+    /// Resolve a combat node (Hitbox, GrabBox, WeaponTrail) by the bare name used
+    /// in AttackData, checking both direct children (legacy layout) and the
+    /// HitboxRoot container (current layout).
+    public T? FindCombatNode<T>(string name) where T : Node =>
+        GetNodeOrNull<T>(name) ?? GetNodeOrNull<T>($"HitboxRoot/{name}");
 
     /// Recursively collect all Hitbox descendants of <paramref name="node"/>.
     private static IEnumerable<Hitbox> FindHitboxes(Node node)
@@ -145,6 +166,14 @@ public partial class CharacterController : CharacterBody2D
 
         // 6. Tick down post-respawn invincibility and lift it when the window expires.
         TickInvincibility();
+
+        // 7. Shield health regenerates whenever the shield isn't raised.
+        if (Shield is not null && FSM.CurrentStateName != "ShieldState")
+            Shield.Regen();
+
+        // 8. Mirror the hitbox container with facing so attacks hit the right side.
+        if (_hitboxRoot is not null && (int)_hitboxRoot.Scale.X != FacingDirection)
+            _hitboxRoot.Scale = new Vector2(FacingDirection, 1f);
     }
 
     private void TickInvincibility()
@@ -161,6 +190,38 @@ public partial class CharacterController : CharacterBody2D
     /// <param name="hitstunMultiplier">Attack-level hitstun scale from AttackData.</param>
     public void ReceiveHit(CharacterController attacker, HitboxData hitboxData, float hitstunMultiplier = 1f)
     {
+        // ── Shield absorb ─────────────────────────────────────────────────────
+        // A raised shield eats the hit: chip damage to shield health, brief
+        // pushback, no percent gained. Grab-type hitboxes pass straight through
+        // (grabs beat shields). A chip that empties the shield BREAKS it.
+        if (FSM.CurrentStateName == "ShieldState" &&
+            Shield is not null && !Shield.IsBroken &&
+            hitboxData.Type != HitboxType.Grab)
+        {
+            bool broke = Shield.Chip(hitboxData.Damage);
+            if (broke)
+            {
+                Shield.Hide();
+                FSM.TransitionTo("HitstunState", new Dictionary
+                {
+                    { "launch_velocity", new Vector2(0f, -300f) },
+                    { "hitstun_frames",  Data.ShieldBreakStunFrames },
+                    { "hitlag_frames",   hitboxData.HitlagFrames },
+                });
+                // Restore health now; the long stun itself is the punishment.
+                Shield.Reset();
+            }
+            else
+            {
+                // Shield pushback: slide away from the attacker, scaled by damage.
+                CharacterVelocity = new Vector2(
+                    attacker.FacingDirection * hitboxData.Damage * 28f, 0f);
+            }
+
+            HitstopManager.RequestFreeze(attacker, hitboxData.HitlagFrames);
+            return;
+        }
+
         if (HurtboxContainer.HasSuperArmour)
         {
             // Super armour: absorb the hit without launching. Still take damage.

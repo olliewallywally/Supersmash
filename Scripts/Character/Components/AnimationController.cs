@@ -59,6 +59,14 @@ public partial class AnimationController : Node
         { "HelplessState",  "helpless"  },
         { "RespawnState",   "respawn"   },
         { "AttackState",    ""          }, // resolved per-attack below
+        { "CrouchState",    "crouch"    },
+        { "ShieldState",    "shield"    },
+        { "LandingState",   "landing"   },
+        { "DashState",      "dash"      },
+        { "GrabState",      "grab"      },
+        { "GrabbedState",   "grabbed"   },
+        { "LedgeHangState", "ledge_hang"},
+        { "DodgeState",     ""          }, // resolved per-kind by DodgeState itself
     };
 
     // ── Internal ──────────────────────────────────────────────────────────────
@@ -78,6 +86,12 @@ public partial class AnimationController : Node
     {
         _character           = GetParent<CharacterController>();
         _lastFacingDirection = _character.FacingDirection;
+
+        // Apply the starting facing immediately — a fighter spawned facing left
+        // (e.g. Player 2) must not render mirrored until their first turnaround.
+        if (_visualRoot is not null)
+            _visualRoot.Scale = new Vector2(_lastFacingDirection, 1f);
+
         _character.FSM.StateChanged += OnStateChanged;
 
         if (_sprite is not null)

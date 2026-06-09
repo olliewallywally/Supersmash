@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Laser bolt projectile sprite. CC0 public domain. -->
+<!-- Horizontal red energy bolt with white-hot core, Star-Fox-blaster style. -->
+<svg width="48" height="12" viewBox="0 0 48 12" version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#FF2200" stop-opacity="0"/>
+      <stop offset="35%"  stop-color="#FF4422" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FF6644" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer glow -->
+  <rect x="0" y="1" width="48" height="10" rx="5" fill="url(#boltGrad)" opacity="0.6"/>
+  <!-- Bolt body -->
+  <rect x="6" y="3" width="40" height="6" rx="3" fill="#FF3311"/>
+  <!-- White-hot core -->
+  <rect x="14" y="4.5" width="32" height="3" rx="1.5" fill="#FFEEDD"/>
+</svg>

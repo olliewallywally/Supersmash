@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitSpark.cs" id="1_script"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Effects/hit_spark.svg" id="2_sprite"]
+
+[node name="HitSpark" type="Node2D"]
+script = ExtResource("1_script")
+LifetimeSec = 0.2
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_sprite")

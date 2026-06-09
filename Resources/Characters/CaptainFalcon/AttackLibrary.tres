@@ -16,7 +16,7 @@
 ;   • ForwardAir (Knee) rewards deep reads: 14-frame startup, KO power at mid %.
 ;   • Weight (104) eats punishment — Falcon often wins the damage race if he can
 ;     land his hits.
-[gd_resource type="Resource" script_class="AttackLibrary" load_steps=18 format=3]
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
@@ -192,6 +192,37 @@ HitboxNodeName = "FairHitbox"
 Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardAir")])
 HitstunMultiplier = 1.1
 
+
+; ── NeutralSpecial — FALCON PUNCH ────────────────────────────────────────────
+; meleelight: 27% damage, 102 KBG, 30 BKB, Sakurai angle. THE read move.
+; ~Frame 40 startup (Melee hits f53 — shortened for our faster pace) means it
+; only lands off a hard read or a shield-break. Reuses the ForwardSmashHitbox
+; node, extended by the smash hitbox placement. Usable airborne (true to Melee).
+[sub_resource type="Resource" id="HitboxData_NeutralSpecial"]
+script = ExtResource("Script_HitboxData")
+Damage = 27.0
+BaseKnockback = 30.0
+KnockbackGrowth = 102.0
+LaunchAngle = 43.0
+AngleFlipsWithFacing = true
+HitlagFrames = 12
+HitstunFrames = 40
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralSpecial"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralSpecial"
+IsAerial = true
+StartupFrames = 39
+ActiveFrames = 4
+RecoveryFrames = 30
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralSpecial")])
+HitstunMultiplier = 1.1
+
+
 [resource]
 script = ExtResource("Script_AttackLibrary")
-Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardAir")])
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardAir"), SubResource("AttackData_NeutralSpecial")])

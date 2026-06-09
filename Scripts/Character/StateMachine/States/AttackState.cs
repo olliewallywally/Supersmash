@@ -36,16 +36,18 @@ public partial class AttackState : State
     private WeaponTrail? _trail;
     private int          _frame;
     private bool         _hitboxLive;
+    private bool         _startedAirborne;
 
     public override void Enter(Dictionary? msg = null)
     {
-        _frame          = 0;
-        _hitboxLive     = false;
-        _hitbox         = null;
-        _hitbox2        = null;
-        _trail          = null;
-        _attack         = null;
-        CurrentAttackId = string.Empty;
+        _frame           = 0;
+        _hitboxLive      = false;
+        _hitbox          = null;
+        _hitbox2         = null;
+        _trail           = null;
+        _attack          = null;
+        _startedAirborne = !Character.IsOnFloor();
+        CurrentAttackId  = string.Empty;
 
         string attackId = string.Empty;
         if (msg is not null && msg.TryGetValue("attack_type", out Variant v))
@@ -64,7 +66,7 @@ public partial class AttackState : State
         // Resolve and pre-arm the hitbox node with this attack's payload + tuning.
         if (!string.IsNullOrEmpty(_attack.HitboxNodeName))
         {
-            _hitbox = Character.GetNodeOrNull<Hitbox>(_attack.HitboxNodeName);
+            _hitbox = Character.FindCombatNode<Hitbox>(_attack.HitboxNodeName);
             if (_hitbox is not null)
             {
                 _hitbox.Data              = _attack.PrimaryHitbox;
@@ -79,7 +81,7 @@ public partial class AttackState : State
         // Resolve optional sourspot / secondary hitbox.
         if (!string.IsNullOrEmpty(_attack.HitboxNodeName2))
         {
-            _hitbox2 = Character.GetNodeOrNull<Hitbox>(_attack.HitboxNodeName2);
+            _hitbox2 = Character.FindCombatNode<Hitbox>(_attack.HitboxNodeName2);
             if (_hitbox2 is not null && _attack.Hitboxes.Count > 1)
             {
                 _hitbox2.Data              = _attack.Hitboxes[1];
@@ -94,7 +96,7 @@ public partial class AttackState : State
 
         // Resolve optional weapon trail node.
         if (!string.IsNullOrEmpty(_attack.TrailNodeName))
-            _trail = Character.GetNodeOrNull<WeaponTrail>(_attack.TrailNodeName);
+            _trail = Character.FindCombatNode<WeaponTrail>(_attack.TrailNodeName);
     }
 
     public override void Exit()
@@ -153,6 +155,34 @@ public partial class AttackState : State
             _trail?.Deactivate();
         }
 
+        // ── Physics during the attack ─────────────────────────────────────────
+        // Airborne attacks keep falling and drifting; grounded attacks skid to a
+        // stop. Branch on where the attack STARTED — not IsAerial — so a special
+        // usable in both air and ground (e.g. Falcon Punch) doesn't get gravity
+        // and an instant landing-cancel when thrown from the ground.
+        if (_startedAirborne)
+        {
+            Character.CharacterVelocity = MovementComponent.ApplyGravity(
+                Character.CharacterVelocity, Character.Data, Character.IsFastFalling, delta);
+            Character.CharacterVelocity = MovementComponent.ApplyAirMovement(
+                Character.CharacterVelocity, Character.Input.MoveStick.X, Character.Data);
+
+            // Landing-cancel: touching down mid-aerial cuts to landing lag.
+            // Half the move's recovery, never less than soft landing. L-cancel
+            // (halving again on a timed input) hooks in here later.
+            if (Character.IsOnFloor())
+            {
+                int lag = Mathf.Max(Character.Data.SoftLandingFrames, _attack.RecoveryFrames / 2);
+                FSM.TransitionTo("LandingState", "lag_frames", lag);
+                return;
+            }
+        }
+        else
+        {
+            Character.CharacterVelocity = MovementComponent.ApplyGroundFriction(
+                Character.CharacterVelocity, Character.Data);
+        }
+
         // Past the final recovery frame → return to neutral.
         if (_frame > _attack.TotalFrames)
         {
@@ -160,8 +190,40 @@ public partial class AttackState : State
         }
     }
 
-    // Inputs are intentionally not handled mid-attack; buffered presses (jump, etc.)
-    // fire naturally in the next state once recovery ends.
+    // ── Move selection helpers (used by Idle/Run/Fall/Jump states) ──────────────
+
+    /// Pick the aerial matching the stick direction, falling back to NeutralAir
+    /// when the directional move doesn't exist in this character's library.
+    public static string PickAerial(CharacterController character, Vector2 stick)
+    {
+        string id = "NeutralAir";
+        if (Mathf.Abs(stick.X) > 0.4f)
+            id = Mathf.Sign(stick.X) == character.FacingDirection ? "ForwardAir" : "BackAir";
+        else if (stick.Y < -0.4f)
+            id = "UpAir";
+
+        return character.Attacks?.Get(id) is not null ? id : "NeutralAir";
+    }
+
+    /// Pick the grounded normal for the stick direction: up-tilt, forward tilt
+    /// or smash (by stick magnitude), or jab at neutral.
+    public static string PickGrounded(CharacterController character, Vector2 stick)
+    {
+        string id;
+        if (stick.Y < -0.4f && Mathf.Abs(stick.Y) >= Mathf.Abs(stick.X))
+            id = "UpTilt";
+        else if (Mathf.Abs(stick.X) > 0.85f)
+            id = "ForwardSmash";
+        else if (Mathf.Abs(stick.X) > 0.3f)
+            id = "ForwardTilt";
+        else
+            id = "Jab";
+
+        return character.Attacks?.Get(id) is not null ? id : "Jab";
+    }
+
+    // Other inputs are intentionally not handled mid-attack; buffered presses
+    // (jump, etc.) fire naturally in the next state once recovery ends.
 
     // ── Tipper priority ───────────────────────────────────────────────────────
 

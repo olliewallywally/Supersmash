@@ -1,0 +1,276 @@
+[gd_scene load_steps=36 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/CharacterController.cs" id="s_controller"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/CharacterStateMachine.cs" id="s_fsm"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/IdleState.cs" id="s_idle"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/RunState.cs" id="s_run"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/DashState.cs" id="s_dash"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/CrouchState.cs" id="s_crouch"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/JumpSquatState.cs" id="s_jumpsquat"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/JumpState.cs" id="s_jump"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/FallState.cs" id="s_fall"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/LandingState.cs" id="s_landing"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/AttackState.cs" id="s_attack"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/ShieldState.cs" id="s_shield"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/DodgeState.cs" id="s_dodge"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/GrabState.cs" id="s_grab"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/GrabbedState.cs" id="s_grabbed"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/HitstunState.cs" id="s_hitstun"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/HelplessState.cs" id="s_helpless"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/LedgeHangState.cs" id="s_ledgehang"]
+[ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/RespawnState.cs" id="s_respawn"]
+[ext_resource type="Script" path="res://Scripts/Character/Components/InputHandler.cs" id="s_input"]
+[ext_resource type="Script" path="res://Scripts/Character/Components/MovementComponent.cs" id="s_movement"]
+[ext_resource type="Script" path="res://Scripts/Character/Components/CombatComponent.cs" id="s_combat"]
+[ext_resource type="Script" path="res://Scripts/Character/Components/ShieldComponent.cs" id="s_shieldcomp"]
+[ext_resource type="Script" path="res://Scripts/Character/Components/AnimationController.cs" id="s_anim"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/Hurtbox.cs" id="s_hurtbox"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/Hitbox.cs" id="s_hitbox"]
+[ext_resource type="SpriteFrames" path="res://Resources/SpriteFrames/adventurer_base.tres" id="r_frames"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Effects/shield_bubble.svg" id="r_bubble"]
+[ext_resource type="PackedScene" path="res://Scenes/Effects/HitSpark.tscn" id="r_hitspark"]
+
+[sub_resource type="RectangleShape2D" id="shape_body"]
+size = Vector2(34, 78)
+
+[sub_resource type="RectangleShape2D" id="shape_grab"]
+size = Vector2(36, 56)
+
+[sub_resource type="CircleShape2D" id="shape_r14"]
+radius = 14.0
+
+[sub_resource type="CircleShape2D" id="shape_r18"]
+radius = 18.0
+
+[sub_resource type="CircleShape2D" id="shape_r22"]
+radius = 22.0
+
+[sub_resource type="CircleShape2D" id="shape_r26"]
+radius = 26.0
+
+[sub_resource type="CircleShape2D" id="shape_r30"]
+radius = 30.0
+
+[node name="Fighter" type="CharacterBody2D"]
+script = ExtResource("s_controller")
+collision_layer = 4
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("shape_body")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("s_fsm")
+
+[node name="IdleState" type="Node" parent="StateMachine"]
+script = ExtResource("s_idle")
+
+[node name="RunState" type="Node" parent="StateMachine"]
+script = ExtResource("s_run")
+
+[node name="DashState" type="Node" parent="StateMachine"]
+script = ExtResource("s_dash")
+
+[node name="CrouchState" type="Node" parent="StateMachine"]
+script = ExtResource("s_crouch")
+
+[node name="JumpSquatState" type="Node" parent="StateMachine"]
+script = ExtResource("s_jumpsquat")
+
+[node name="JumpState" type="Node" parent="StateMachine"]
+script = ExtResource("s_jump")
+
+[node name="FallState" type="Node" parent="StateMachine"]
+script = ExtResource("s_fall")
+
+[node name="LandingState" type="Node" parent="StateMachine"]
+script = ExtResource("s_landing")
+
+[node name="AttackState" type="Node" parent="StateMachine"]
+script = ExtResource("s_attack")
+
+[node name="ShieldState" type="Node" parent="StateMachine"]
+script = ExtResource("s_shield")
+
+[node name="DodgeState" type="Node" parent="StateMachine"]
+script = ExtResource("s_dodge")
+
+[node name="GrabState" type="Node" parent="StateMachine"]
+script = ExtResource("s_grab")
+
+[node name="GrabbedState" type="Node" parent="StateMachine"]
+script = ExtResource("s_grabbed")
+
+[node name="HitstunState" type="Node" parent="StateMachine"]
+script = ExtResource("s_hitstun")
+
+[node name="HelplessState" type="Node" parent="StateMachine"]
+script = ExtResource("s_helpless")
+
+[node name="LedgeHangState" type="Node" parent="StateMachine"]
+script = ExtResource("s_ledgehang")
+
+[node name="RespawnState" type="Node" parent="StateMachine"]
+script = ExtResource("s_respawn")
+
+[node name="InputHandler" type="Node" parent="."]
+script = ExtResource("s_input")
+
+[node name="MovementComponent" type="Node" parent="."]
+script = ExtResource("s_movement")
+
+[node name="CombatComponent" type="Node" parent="."]
+script = ExtResource("s_combat")
+
+[node name="ShieldComponent" type="Node" parent="."]
+script = ExtResource("s_shieldcomp")
+Bubble = NodePath("../VisualRoot/ShieldBubble")
+
+[node name="AnimationController" type="Node" parent="."]
+script = ExtResource("s_anim")
+_sprite = NodePath("../VisualRoot/AnimatedSprite2D")
+_visualRoot = NodePath("../VisualRoot")
+
+[node name="VisualRoot" type="Node2D" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="VisualRoot"]
+position = Vector2(0, -7)
+scale = Vector2(2.5, 2.5)
+sprite_frames = ExtResource("r_frames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="ShieldBubble" type="Sprite2D" parent="VisualRoot"]
+visible = false
+position = Vector2(0, -5)
+texture = ExtResource("r_bubble")
+
+[node name="HurtboxContainer" type="Area2D" parent="."]
+script = ExtResource("s_hurtbox")
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxContainer"]
+shape = SubResource("shape_body")
+
+[node name="HitboxRoot" type="Node2D" parent="."]
+
+[node name="JabHitbox" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/JabHitbox"]
+position = Vector2(38, -12)
+shape = SubResource("shape_r18")
+
+[node name="ForwardTiltHitbox" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/ForwardTiltHitbox"]
+position = Vector2(48, -14)
+shape = SubResource("shape_r22")
+
+[node name="ForwardTiltTipper" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/ForwardTiltTipper"]
+position = Vector2(68, -14)
+shape = SubResource("shape_r14")
+
+[node name="ForwardTiltBase" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/ForwardTiltBase"]
+position = Vector2(38, -14)
+shape = SubResource("shape_r18")
+
+[node name="UpTiltHitbox" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/UpTiltHitbox"]
+position = Vector2(4, -58)
+shape = SubResource("shape_r26")
+
+[node name="ForwardSmashHitbox" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/ForwardSmashHitbox"]
+position = Vector2(54, -16)
+shape = SubResource("shape_r26")
+
+[node name="ForwardSmashTipper" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/ForwardSmashTipper"]
+position = Vector2(80, -16)
+shape = SubResource("shape_r14")
+
+[node name="ForwardSmashBase" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/ForwardSmashBase"]
+position = Vector2(46, -16)
+shape = SubResource("shape_r18")
+
+[node name="NairHitbox" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/NairHitbox"]
+position = Vector2(0, -18)
+shape = SubResource("shape_r30")
+
+[node name="FairHitbox" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/FairHitbox"]
+position = Vector2(42, -20)
+shape = SubResource("shape_r22")
+
+[node name="BackAirHitbox" type="Area2D" parent="HitboxRoot"]
+script = ExtResource("s_hitbox")
+collision_layer = 1
+collision_mask = 2
+HitSparkScene = ExtResource("r_hitspark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/BackAirHitbox"]
+position = Vector2(-42, -18)
+shape = SubResource("shape_r22")
+
+[node name="GrabBox" type="Area2D" parent="HitboxRoot"]
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxRoot/GrabBox"]
+position = Vector2(34, -10)
+shape = SubResource("shape_grab")

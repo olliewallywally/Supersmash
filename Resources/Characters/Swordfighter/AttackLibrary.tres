@@ -19,7 +19,7 @@
 ;   ForwardSmash: frame 10 tipper = kill move; sourspot = combo starter below 80%.
 ;   NeutralAir: long-lasting aerial. Covers landing and platform pressure.
 ;   ForwardAir: frame 6. Forward air is the primary combo aerial (Dancing Blade idea).
-[gd_resource type="Resource" script_class="AttackLibrary" load_steps=22 format=3]
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
@@ -230,6 +230,34 @@ HitboxNodeName = "FairHitbox"
 Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardAir")])
 HitstunMultiplier = 1.0
 
+
+; ── NeutralSpecial — Shield Breaker ──────────────────────────────────────────
+; Marth's charged stab. 16% on the tipper node — spacing rewarded even here.
+; Deliberately slow (f19) with real recovery: a whiff is heavily punishable.
+[sub_resource type="Resource" id="HitboxData_NeutralSpecial"]
+script = ExtResource("Script_HitboxData")
+Damage = 16.0
+BaseKnockback = 30.0
+KnockbackGrowth = 85.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 9
+HitstunFrames = 30
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralSpecial"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralSpecial"
+IsAerial = true
+StartupFrames = 18
+ActiveFrames = 3
+RecoveryFrames = 28
+HitboxNodeName = "ForwardSmashTipper"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralSpecial")])
+HitstunMultiplier = 1.05
+
 [resource]
 script = ExtResource("Script_AttackLibrary")
-Attacks = Array[Resource]([SubResource("AttackData_Jab1"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardAir")])
+Attacks = Array[Resource]([SubResource("AttackData_Jab1"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardAir"), SubResource("AttackData_NeutralSpecial")])

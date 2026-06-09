@@ -62,6 +62,9 @@ public partial class RespawnManager : Node
     {
         int idx = character.PlayerIndex;
 
+        // Damage percent resets with the lost stock — Smash convention.
+        character.Combat.ResetDamage();
+
         _stocks[idx] = Mathf.Max(0, _stocks[idx] - 1);
         EmitSignal(SignalName.PlayerDied, idx, _stocks[idx]);
 

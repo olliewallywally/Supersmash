@@ -21,17 +21,65 @@ public partial class IdleState : State
             return;
         }
 
+        if (input.IsBuffered(GameAction.Shield))
+        {
+            FSM.TransitionTo("ShieldState");
+            return;
+        }
+
+        if (input.IsBuffered(GameAction.Grab))
+        {
+            input.Consume(GameAction.Grab);
+            FSM.TransitionTo("GrabState");
+            return;
+        }
+
+        if (input.IsBuffered(GameAction.Dodge))
+        {
+            input.Consume(GameAction.Dodge);
+            string kind = Mathf.Abs(input.MoveStick.X) > 0.5f ? "roll" : "spotdodge";
+            int dir = input.MoveStick.X >= 0f ? 1 : -1;
+            FSM.TransitionTo("DodgeState", new Dictionary { { "kind", kind }, { "dir", dir } });
+            return;
+        }
+
+        if (input.IsBuffered(GameAction.Special))
+        {
+            input.Consume(GameAction.Special);
+            if (Character.Attacks?.Get("NeutralSpecial") is not null)
+            {
+                FSM.TransitionTo("AttackState", "attack_type", "NeutralSpecial");
+                return;
+            }
+        }
+
+        if (input.IsBuffered(GameAction.Attack))
+        {
+            input.Consume(GameAction.Attack);
+            FSM.TransitionTo("AttackState", "attack_type",
+                AttackState.PickGrounded(Character, input.MoveStick));
+            return;
+        }
+
         float moveX = input.MoveStick.X;
+        float moveY = input.MoveStick.Y;
+
+        // Hard horizontal flick → dash (dash-dance entry); soft tilt → run.
+        if (Mathf.Abs(moveX) > DashState.DashThreshold)
+        {
+            FSM.TransitionTo("DashState", "dir", Mathf.Sign(moveX));
+            return;
+        }
         if (Mathf.Abs(moveX) > 0.3f)
         {
             FSM.TransitionTo("RunState");
             return;
         }
 
-        if (input.IsBuffered(GameAction.Attack))
+        // Held down (without a horizontal component) → crouch.
+        if (moveY > 0.6f)
         {
-            input.Consume(GameAction.Attack);
-            FSM.TransitionTo("AttackState", "attack_type", "Jab");
+            FSM.TransitionTo("CrouchState");
             return;
         }
     }

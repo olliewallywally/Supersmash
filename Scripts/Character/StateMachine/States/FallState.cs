@@ -53,11 +53,32 @@ public partial class FallState : State
                 Character.Data.FastFallMaxSpeed); // instant snap to fast-fall speed
         }
 
-        // ── Aerial attack ─────────────────────────────────────────────────────
+        // ── Air dodge ─────────────────────────────────────────────────────────
+        if (input.IsBuffered(GameAction.Dodge) || input.IsBuffered(GameAction.Shield))
+        {
+            input.Consume(GameAction.Dodge);
+            input.Consume(GameAction.Shield);
+            FSM.TransitionTo("DodgeState", "kind", "airdodge");
+            return;
+        }
+
+        // ── Aerial special ────────────────────────────────────────────────────
+        if (input.IsBuffered(GameAction.Special))
+        {
+            input.Consume(GameAction.Special);
+            if (Character.Attacks?.Get("NeutralSpecial") is not null)
+            {
+                FSM.TransitionTo("AttackState", "attack_type", "NeutralSpecial");
+                return;
+            }
+        }
+
+        // ── Aerial attack (directional) ───────────────────────────────────────
         if (input.IsBuffered(GameAction.Attack))
         {
             input.Consume(GameAction.Attack);
-            FSM.TransitionTo("AttackState", "attack_type", "NeutralAir");
+            FSM.TransitionTo("AttackState", "attack_type",
+                AttackState.PickAerial(Character, input.MoveStick));
             return;
         }
     }
@@ -68,9 +89,7 @@ public partial class FallState : State
 
         if (Character.IsOnFloor())
         {
-            Character.IsFastFalling     = false;
-            Character.AirJumpsRemaining = Character.Data.MaxAirJumps;
-            FSM.TransitionTo("IdleState");
+            FSM.TransitionTo("LandingState", "lag_frames", Character.Data.SoftLandingFrames);
             return;
         }
 

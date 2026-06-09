@@ -40,10 +40,30 @@ public partial class JumpState : State
             // No state change — we stay in JumpState on the new rising arc.
         }
 
+        // Air dodge from the rising arc.
+        if (input.IsBuffered(GameAction.Dodge) || input.IsBuffered(GameAction.Shield))
+        {
+            input.Consume(GameAction.Dodge);
+            input.Consume(GameAction.Shield);
+            FSM.TransitionTo("DodgeState", "kind", "airdodge");
+            return;
+        }
+
+        if (input.IsBuffered(GameAction.Special))
+        {
+            input.Consume(GameAction.Special);
+            if (Character.Attacks?.Get("NeutralSpecial") is not null)
+            {
+                FSM.TransitionTo("AttackState", "attack_type", "NeutralSpecial");
+                return;
+            }
+        }
+
         if (input.IsBuffered(GameAction.Attack))
         {
             input.Consume(GameAction.Attack);
-            FSM.TransitionTo("AttackState", "attack_type", "NeutralAir");
+            FSM.TransitionTo("AttackState", "attack_type",
+                AttackState.PickAerial(Character, input.MoveStick));
         }
     }
 

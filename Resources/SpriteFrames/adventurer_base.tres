@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=90 format=3]
+[gd_resource type="SpriteFrames" load_steps=99 format=3]
 
 [ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-idle-00.png" id="idle0"]
 [ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-idle-01.png" id="idle1"]
@@ -89,6 +89,15 @@
 [ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-cast-01.png" id="cs1"]
 [ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-cast-02.png" id="cs2"]
 [ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-cast-03.png" id="cs3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crouch-00.png" id="cr0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crouch-01.png" id="cr1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crouch-02.png" id="cr2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-crouch-03.png" id="cr3"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-items-00.png" id="it0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-items-01.png" id="it1"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-items-02.png" id="it2"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-slide-00.png" id="sl0"]
+[ext_resource type="Texture2D" path="res://Resources/Sprites/Characters/Adventurer/adventurer-slide-01.png" id="sl1"]
 
 [resource]
 animations = [{
@@ -102,6 +111,12 @@ animations = [{
 "loop": true,
 "name": &"run",
 "speed": 12.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("run0")}, {"duration": 1.0, "texture": ExtResource("run1")}, {"duration": 1.0, "texture": ExtResource("run2")}, {"duration": 1.0, "texture": ExtResource("run3")}, {"duration": 1.0, "texture": ExtResource("run4")}, {"duration": 1.0, "texture": ExtResource("run5")}],
+"loop": true,
+"name": &"dash",
+"speed": 16.0
 },
 {
 "frames": [{"duration": 1.0, "texture": ExtResource("jmp0")}, {"duration": 1.0, "texture": ExtResource("jmp1")}],
@@ -122,9 +137,33 @@ animations = [{
 "speed": 8.0
 },
 {
+"frames": [{"duration": 1.0, "texture": ExtResource("cr0")}, {"duration": 1.0, "texture": ExtResource("cr1")}],
+"loop": false,
+"name": &"landing",
+"speed": 12.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("cr0")}, {"duration": 1.0, "texture": ExtResource("cr1")}, {"duration": 1.0, "texture": ExtResource("cr2")}, {"duration": 1.0, "texture": ExtResource("cr3")}],
+"loop": true,
+"name": &"crouch",
+"speed": 8.0
+},
+{
 "frames": [{"duration": 1.0, "texture": ExtResource("hrt0")}, {"duration": 1.0, "texture": ExtResource("hrt1")}, {"duration": 1.0, "texture": ExtResource("hrt2")}],
 "loop": false,
 "name": &"hitstun",
+"speed": 10.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("kd0")}, {"duration": 1.0, "texture": ExtResource("kd1")}, {"duration": 1.0, "texture": ExtResource("kd2")}, {"duration": 1.0, "texture": ExtResource("kd3")}, {"duration": 1.0, "texture": ExtResource("kd4")}, {"duration": 1.0, "texture": ExtResource("kd5")}, {"duration": 1.0, "texture": ExtResource("kd6")}],
+"loop": false,
+"name": &"knock_down",
+"speed": 10.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("gu0")}, {"duration": 1.0, "texture": ExtResource("gu1")}, {"duration": 1.0, "texture": ExtResource("gu2")}, {"duration": 1.0, "texture": ExtResource("gu3")}, {"duration": 1.0, "texture": ExtResource("gu4")}, {"duration": 1.0, "texture": ExtResource("gu5")}, {"duration": 1.0, "texture": ExtResource("gu6")}],
+"loop": false,
+"name": &"get_up",
 "speed": 10.0
 },
 {
@@ -140,15 +179,51 @@ animations = [{
 "speed": 8.0
 },
 {
-"frames": [{"duration": 1.0, "texture": ExtResource("kd0")}, {"duration": 1.0, "texture": ExtResource("kd1")}, {"duration": 1.0, "texture": ExtResource("kd2")}, {"duration": 1.0, "texture": ExtResource("kd3")}, {"duration": 1.0, "texture": ExtResource("kd4")}, {"duration": 1.0, "texture": ExtResource("kd5")}, {"duration": 1.0, "texture": ExtResource("kd6")}],
+"frames": [{"duration": 1.0, "texture": ExtResource("cr0")}],
 "loop": false,
-"name": &"knock_down",
-"speed": 10.0
+"name": &"shield",
+"speed": 1.0
 },
 {
-"frames": [{"duration": 1.0, "texture": ExtResource("gu0")}, {"duration": 1.0, "texture": ExtResource("gu1")}, {"duration": 1.0, "texture": ExtResource("gu2")}, {"duration": 1.0, "texture": ExtResource("gu3")}, {"duration": 1.0, "texture": ExtResource("gu4")}, {"duration": 1.0, "texture": ExtResource("gu5")}, {"duration": 1.0, "texture": ExtResource("gu6")}],
+"frames": [{"duration": 1.0, "texture": ExtResource("slt0")}, {"duration": 1.0, "texture": ExtResource("slt1")}, {"duration": 1.0, "texture": ExtResource("slt2")}, {"duration": 1.0, "texture": ExtResource("slt3")}],
 "loop": false,
-"name": &"get_up",
+"name": &"roll",
+"speed": 16.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("cr0")}, {"duration": 1.0, "texture": ExtResource("cr1")}, {"duration": 1.0, "texture": ExtResource("cr2")}, {"duration": 1.0, "texture": ExtResource("cr3")}],
+"loop": false,
+"name": &"spotdodge",
+"speed": 16.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("slt0")}, {"duration": 1.0, "texture": ExtResource("slt1")}, {"duration": 1.0, "texture": ExtResource("slt2")}, {"duration": 1.0, "texture": ExtResource("slt3")}],
+"loop": false,
+"name": &"airdodge",
+"speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("it0")}, {"duration": 1.0, "texture": ExtResource("it1")}, {"duration": 1.0, "texture": ExtResource("it2")}],
+"loop": false,
+"name": &"grab",
+"speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("a20")}, {"duration": 1.0, "texture": ExtResource("a21")}, {"duration": 1.0, "texture": ExtResource("a22")}, {"duration": 1.0, "texture": ExtResource("a23")}],
+"loop": false,
+"name": &"throw",
+"speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("hrt0")}, {"duration": 1.0, "texture": ExtResource("hrt1")}],
+"loop": true,
+"name": &"grabbed",
+"speed": 6.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("cs0")}, {"duration": 1.0, "texture": ExtResource("cs1")}, {"duration": 1.0, "texture": ExtResource("cs2")}, {"duration": 1.0, "texture": ExtResource("cs3")}],
+"loop": false,
+"name": &"special",
 "speed": 10.0
 },
 {
@@ -204,6 +279,12 @@ animations = [{
 "loop": false,
 "name": &"attack_BackAir",
 "speed": 14.0
+},
+{
+"frames": [{"duration": 1.0, "texture": ExtResource("cs0")}, {"duration": 1.0, "texture": ExtResource("cs1")}, {"duration": 1.0, "texture": ExtResource("cs2")}, {"duration": 1.0, "texture": ExtResource("cs3")}],
+"loop": false,
+"name": &"attack_NeutralSpecial",
+"speed": 10.0
 },
 {
 "frames": [{"duration": 1.0, "texture": ExtResource("cs0")}, {"duration": 1.0, "texture": ExtResource("cs1")}, {"duration": 1.0, "texture": ExtResource("cs2")}, {"duration": 1.0, "texture": ExtResource("cs3")}],

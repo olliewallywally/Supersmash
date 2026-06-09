@@ -1,0 +1,137 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Game/MainMenu.cs" id="s_menu"]
+
+[sub_resource type="Gradient" id="grad_bg"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.08, 0.09, 0.18, 1, 0.22, 0.16, 0.35, 1)
+
+[sub_resource type="GradientTexture2D" id="tex_bg"]
+gradient = SubResource("grad_bg")
+fill_to = Vector2(0, 1)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("s_menu")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = SubResource("tex_bg")
+stretch_mode = 6
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Menu" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Center/Menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 72
+horizontal_alignment = 1
+text = "SUPERSMASH"
+
+[node name="Subtitle" type="Label" parent="Center/Menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+horizontal_alignment = 1
+text = "a platform fighter"
+
+[node name="Spacer1" type="Control" parent="Center/Menu"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 24)
+
+[node name="P0Row" type="HBoxContainer" parent="Center/Menu"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="P0Label" type="Label" parent="Center/Menu/P0Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 0)
+theme_override_colors/font_color = Color(0.95, 0.35, 0.25, 1)
+text = "Player 1"
+
+[node name="P0Picker" type="OptionButton" parent="Center/Menu/P0Row"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(240, 0)
+
+[node name="P1Row" type="HBoxContainer" parent="Center/Menu"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="P1Label" type="Label" parent="Center/Menu/P1Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 0)
+theme_override_colors/font_color = Color(0.3, 0.55, 0.95, 1)
+text = "Player 2"
+
+[node name="P1Picker" type="OptionButton" parent="Center/Menu/P1Row"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(240, 0)
+
+[node name="OptionsRow" type="HBoxContainer" parent="Center/Menu"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="DummyToggle" type="CheckBox" parent="Center/Menu/OptionsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "P2 is training dummy"
+
+[node name="StocksLabel" type="Label" parent="Center/Menu/OptionsRow"]
+layout_mode = 2
+text = "Stocks"
+
+[node name="StocksBox" type="SpinBox" parent="Center/Menu/OptionsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1.0
+max_value = 9.0
+value = 3.0
+
+[node name="Spacer2" type="Control" parent="Center/Menu"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 24)
+
+[node name="FightButton" type="Button" parent="Center/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 28
+text = "FIGHT!"
+
+[node name="QuitButton" type="Button" parent="Center/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Quit"
+
+[node name="Controls" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -76.0
+offset_bottom = -16.0
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+text = "P1: WASD move · X jump · Z attack · C special · V shield · F grab · G dodge · IJKL c-stick
+P2: Arrows move · . jump · , attack · / special · M shield · N grab · B dodge"
