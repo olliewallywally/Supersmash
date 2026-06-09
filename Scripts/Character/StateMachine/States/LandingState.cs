@@ -33,6 +33,8 @@ public partial class LandingState : State
         Character.IsFastFalling     = false;
         Character.AirJumpsRemaining = Character.Data.MaxAirJumps;
         Character.StateFrameCounter = 0;
+
+        AudioManager.PlayLandSound(Character.GetTree());
     }
 
     public override void PhysicsUpdate(double delta)

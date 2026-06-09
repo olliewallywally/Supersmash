@@ -97,7 +97,9 @@ public partial class DodgeState : State
 
             if (Character.IsOnFloor())
             {
-                FSM.TransitionTo("LandingState");
+                // Air-dodge landing carries real lag (≈10f) — softer than helpless,
+                // far worse than a clean soft landing. Punishes panic dodges.
+                FSM.TransitionTo("LandingState", "lag_frames", 10);
                 return;
             }
             if (_timer >= _totalFrames)

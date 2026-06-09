@@ -69,6 +69,19 @@ public partial class CrouchState : State
             return;
         }
 
+        Character.StateFrameCounter++;
+
+        // ── Platform drop-through ─────────────────────────────────────────────
+        // A HARD down on the first crouch frame opens the drop window. On a
+        // one-way platform the character falls through (the !IsOnFloor branch
+        // above moves us to FallState next tick); on solid ground (layer 4,
+        // unaffected by the mask change) nothing visible happens — just a crouch.
+        if (Character.StateFrameCounter == 1 &&
+            Character.Input.MoveStick.Y >= 0.85f)
+        {
+            Character.DropThroughFrames = 12;
+        }
+
         Character.CharacterVelocity = MovementComponent.ApplyGroundFriction(
             Character.CharacterVelocity, Character.Data);
         Character.CharacterVelocity = new Vector2(Character.CharacterVelocity.X, 0f);

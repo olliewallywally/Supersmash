@@ -64,6 +64,19 @@ public partial class CharacterController : CharacterBody2D
     /// Set by RespawnState on touchdown; counted down in _PhysicsProcess.
     public int TemporaryInvincibilityFrames { get; set; } = 0;
 
+    // ── Platform drop-through ─────────────────────────────────────────────────
+
+    /// Collision mask bits: layer 4 (value 8) = solid world, layer 5 (value 16) =
+    /// one-way platforms. Must match the layers used in Stage.tscn / Fighter.tscn.
+    private const uint WorldMaskBit    = 8;
+    private const uint PlatformMaskBit = 16;
+
+    /// While > 0, one-way platforms are removed from the collision mask so the
+    /// character falls through them. Set by CrouchState on a hard-down input;
+    /// counted down here. Solid ground (layer 4) is never affected, so pressing
+    /// down on the main stage is simply a crouch.
+    public int DropThroughFrames { get; set; } = 0;
+
     /// True while HitstopManager has frozen this character.
     /// CharacterController._PhysicsProcess skips all FSM logic while this is set,
     /// effectively pausing the attack frame counter on the hit frame.
@@ -156,6 +169,17 @@ public partial class CharacterController : CharacterBody2D
 
         // 3. State updates velocity (gravity, friction, drift, etc.).
         FSM.PhysicsUpdate(delta);
+
+        // 3b. Drop-through: while the window is open, ignore one-way platforms.
+        if (DropThroughFrames > 0)
+        {
+            DropThroughFrames--;
+            CollisionMask = WorldMaskBit;
+        }
+        else
+        {
+            CollisionMask = WorldMaskBit | PlatformMaskBit;
+        }
 
         // 4. Commit velocity and let Godot resolve collisions.
         Velocity = CharacterVelocity;

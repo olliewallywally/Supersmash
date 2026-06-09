@@ -88,5 +88,9 @@ public partial class RunState : State
             0f);
 
         Character.StateFrameCounter++;
+
+        // Footstep every 12 frames (~5 steps/sec at run cadence).
+        if (Character.StateFrameCounter % 12 == 0)
+            AudioManager.PlayFootstep(Character.GetTree(), Character.StateFrameCounter / 12);
     }
 }

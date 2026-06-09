@@ -9,6 +9,13 @@ config/name="Supersmash"
 config/features=PackedStringArray("4.3", "C#")
 run/main_scene="res://Scenes/UI/MainMenu.tscn"
 
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
 [dotnet]
 
 project/assembly_name="Supersmash"
@@ -18,6 +25,10 @@ project/assembly_name="Supersmash"
 ; 60 ticks = 1 "frame" in our frame-count budget.
 ; Every timer, buffer window, and hitstun value is expressed in these ticks.
 common/physics_ticks_per_second=60
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
 
 [input]
 

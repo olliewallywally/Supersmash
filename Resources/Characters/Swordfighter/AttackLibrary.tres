@@ -19,7 +19,7 @@
 ;   ForwardSmash: frame 10 tipper = kill move; sourspot = combo starter below 80%.
 ;   NeutralAir: long-lasting aerial. Covers landing and platform pressure.
 ;   ForwardAir: frame 6. Forward air is the primary combo aerial (Dancing Blade idea).
-[gd_resource type="Resource" script_class="AttackLibrary" load_steps=24 format=3]
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]

@@ -9,7 +9,7 @@
 ;   UpTilt     : frame 7 — anti-air. High angle (85°) juggles. Combo starter above 0%.
 ;   BackAir    : frame 6 — kill aerial. 42° diagonal, high BKB. Confirms from NAir.
 ;   ForwardSmash: frame 11 — fastest smash. Confirms through conditioning; kills ~110%.
-[gd_resource type="Resource" script_class="AttackLibrary" load_steps=20 format=3]
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
 [ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]

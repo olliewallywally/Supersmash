@@ -69,7 +69,12 @@ public partial class GrabState : State
     {
         if (!_holding) return;
 
-        // Throw selection by stick flick while holding.
+        // Brief gate before throws are read: without it, the stick still held
+        // from the dash-in approach instantly auto-throws on the catch frame,
+        // removing the deliberate throw choice entirely.
+        if (_timer < 6) return;
+
+        // Throw selection by stick direction while holding.
         Vector2 stick = input.MoveStick;
         if (stick.Length() < 0.6f) return;
 
@@ -105,7 +110,10 @@ public partial class GrabState : State
         // ── Catch window ──────────────────────────────────────────────────────
         if (_grabBox is not null)
         {
-            if (_timer == FirstActiveFrame) _grabBox.Monitoring = true;
+            // Enable monitoring one frame EARLY: Area2D overlap lists refresh on
+            // the physics step, so enabling and querying on the same frame always
+            // returns empty — the first active frame would silently never catch.
+            if (_timer == FirstActiveFrame - 1) _grabBox.Monitoring = true;
 
             if (_timer >= FirstActiveFrame && _timer <= LastActiveFrame)
                 TryCatch();

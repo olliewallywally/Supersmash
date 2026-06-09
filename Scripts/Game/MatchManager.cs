@@ -53,6 +53,14 @@ public partial class MatchManager : Node2D
         _respawn.GameOver += OnGameOver;
     }
 
+    /// Both players share the same placeholder sprite sheet, so a per-player
+    /// tint is the only way to tell them apart at a glance.
+    private static readonly Color[] FighterTints =
+    {
+        new(1.0f, 0.78f, 0.72f),   // P1 warm red
+        new(0.72f, 0.84f, 1.0f),   // P2 cool blue
+    };
+
     private CharacterController SpawnFighter(int playerIndex, int rosterIndex, Vector2 position, int facing)
     {
         var pick = GameConfig.Roster[Mathf.Clamp(rosterIndex, 0, GameConfig.Roster.Length - 1)];
@@ -65,6 +73,8 @@ public partial class MatchManager : Node2D
         AddChild(fighter);
         fighter.GlobalPosition  = position;
         fighter.FacingDirection = facing;
+        fighter.GetNode<Node2D>("VisualRoot").Modulate =
+            FighterTints[playerIndex % FighterTints.Length];
         return fighter;
     }
 
@@ -77,8 +87,9 @@ public partial class MatchManager : Node2D
         _hud.ShowGameOver(winnerPlayerIndex);
 
         // Slow-motion finish, then return to the menu after a short hold.
+        // ignoreTimeScale — otherwise the 0.3× TimeScale stretches this wait to ~8s.
         Engine.TimeScale = 0.3;
-        GetTree().CreateTimer(2.5).Timeout += ReturnToMenu;
+        GetTree().CreateTimer(2.5, ignoreTimeScale: true).Timeout += ReturnToMenu;
     }
 
     private void ReturnToMenu()
