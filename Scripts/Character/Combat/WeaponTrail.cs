@@ -70,14 +70,14 @@ public partial class WeaponTrail : Line2D
             // Index 0 = freshest point (tip). Older points are pushed toward higher indices.
             AddPoint(TipPoint.GlobalPosition, 0);
 
-            while (PointCount > TrailLength)
-                RemovePoint(PointCount - 1);
+            while (GetPointCount() > TrailLength)
+                RemovePoint(GetPointCount() - 1);
         }
-        else if (PointCount > 0)
+        else if (GetPointCount() > 0)
         {
             // Drain from the tail one point per tick so the trail dissolves smoothly
             // rather than vanishing instantly when the active window closes.
-            RemovePoint(PointCount - 1);
+            RemovePoint(GetPointCount() - 1);
         }
     }
 
