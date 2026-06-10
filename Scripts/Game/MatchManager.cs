@@ -44,13 +44,24 @@ public partial class MatchManager : Node2D
 
         // ── Wire the systems ──────────────────────────────────────────────────
         var players = new[] { p0, p1 };
-        camera.Players        = players;
-        _respawn.Players      = players;
-        _respawn.SpawnPoints  = new Node2D[] { spawn0, spawn1 };
+        camera.Players          = players;
+        _respawn.Players        = players;
+        _respawn.SpawnPoints    = new Node2D[] { spawn0, spawn1 };
         _respawn.StartingStocks = GameConfig.StartingStocks;
+        _respawn.Setup();  // must happen AFTER Players + StartingStocks are set
 
         _hud.Initialize(players, _respawn);
         _respawn.GameOver += OnGameOver;
+
+        // Screen shake on hit — heavier hits shake harder.
+        foreach (var player in players)
+        {
+            player.Combat.DamageReceived += (dmg, _) =>
+            {
+                float intensity = dmg >= 15f ? 7f : dmg >= 8f ? 4f : 2f;
+                camera.Shake(intensity);
+            };
+        }
     }
 
     /// Both players share the same placeholder sprite sheet, so a per-player
@@ -98,13 +109,5 @@ public partial class MatchManager : Node2D
         GetTree().ChangeSceneToFile("res://Scenes/UI/MainMenu.tscn");
     }
 
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        // Esc bails back to the menu at any point.
-        if (@event.IsActionPressed("ui_cancel"))
-        {
-            Engine.TimeScale = 1.0;
-            GetTree().ChangeSceneToFile("res://Scenes/UI/MainMenu.tscn");
-        }
-    }
+    // ESC is handled by PauseMenu (which toggles pause and offers Resume/Restart/Menu).
 }

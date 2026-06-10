@@ -1,0 +1,79 @@
+; GreatSword — heavy swordfighter archetype.
+; Inspired by Cloud Strife (FF7 / Smash Bros Ultimate).
+; Long range sword attacks, great jump, medium-heavy weight.
+; Reward: massive kill power. Risk: slow startup on big attacks.
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/CharacterData.cs" id="Script_CharacterData"]
+
+[resource]
+script = ExtResource("Script_CharacterData")
+
+; ── Identity ──────────────────────────────────────────────────────────────────
+; Heavier than Marth (87) and lighter than Falcon (104). Survives to ~130%.
+Weight = 95.0
+
+; ── Ground Movement ───────────────────────────────────────────────────────────
+; Slow walk — Cloud is not a rushdown character.
+WalkSpeed = 520.0
+RunSpeed = 1150.0
+InitialDashSpeed = 1350.0
+GroundFriction = 0.16
+TurnaroundFriction = 0.28
+
+; ── Dash & Dash-Dance ─────────────────────────────────────────────────────────
+InitialDashFrames = 11
+DashDanceWindowFrames = 11
+FoxtrotCooldownFrames = 2
+
+; ── Jumping ───────────────────────────────────────────────────────────────────
+JumpSquatFrames = 5
+FullHopVelocity = -1480.0
+ShortHopVelocity = -870.0
+AirJumpVelocity = -1380.0
+MaxAirJumps = 1
+JumpMomentumTransfer = 0.75
+MaxHorizontalJumpSpeed = 860.0
+
+; ── Air Movement ──────────────────────────────────────────────────────────────
+; Medium-slow air speed — not a rushdown aerial character.
+AirSpeed = 580.0
+AirAcceleration = 0.06
+AirFriction = 0.012
+
+; ── Gravity & Fall ────────────────────────────────────────────────────────────
+; Floatier than Fox/Falco — better aerial presence.
+Gravity = 2600.0
+MaxFallSpeed = 2200.0
+FastFallMultiplier = 1.55
+FastFallMaxSpeed = 3050.0
+
+; ── Landing Lag ───────────────────────────────────────────────────────────────
+SoftLandingFrames = 2
+HelplessLandingFrames = 20
+LCancelMultiplier = 0.5
+
+; ── Ledge ─────────────────────────────────────────────────────────────────────
+LedgeGrabBoxOffset = Vector2(18, -8)
+LedgeGrabBoxSize = Vector2(24, 38)
+LedgeHangInvincibilityFrames = 30
+LedgeRegrabCooldownFrames = 35
+LedgeGetupFrames = 24
+
+; ── Hurtbox Sizing ────────────────────────────────────────────────────────────
+; Tall but somewhat wide — a big target.
+StandingHurtboxSize = Vector2(40, 88)
+CrouchHurtboxSize = Vector2(44, 54)
+
+; ── Shield ────────────────────────────────────────────────────────────────────
+; Strong shield — compensates for slower OOS options.
+ShieldMaxHealth = 52.0
+ShieldDecayRate = 0.24
+ShieldRegenRate = 0.16
+ShieldBreakStunFrames = 180
+
+; ── Combat ────────────────────────────────────────────────────────────────────
+AttackerHitlagFrames = 4
+
+; ── Respawn ───────────────────────────────────────────────────────────────────
+SpawnInvincibilityFrames = 120

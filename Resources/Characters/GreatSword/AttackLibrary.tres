@@ -1,0 +1,222 @@
+; GreatSword (Cloud) — AttackLibrary.
+; Kit philosophy: every attack has long sword reach. Slow startup = high reward.
+;   Jab           : frame 3 — quickest option, puts the sword out fast.
+;   ForwardTilt   : frame 9 — poke. Low angle keeps opponent close for follow-up.
+;   UpTilt        : frame 7 — anti-air juggle. Big vertical range.
+;   ForwardSmash  : frame 14 — big powerful horizontal slash, kills at 80%.
+;   NeutralAir    : frame 4 — quick spin, good combo starter.
+;   ForwardAir    : frame 8 — overhead slash, solid off-stage tool.
+;   BackAir       : frame 6 — fast kill aerial, confirms from short-hops.
+;   NeutralSpecial: frame 18 — Limit Slash, massive sword wave, kills at 60%.
+[gd_resource type="Resource" script_class="AttackLibrary" load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackLibrary.cs" id="Script_AttackLibrary"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/AttackData.cs"    id="Script_AttackData"]
+[ext_resource type="Script" path="res://Scripts/Character/Combat/HitboxData.cs"    id="Script_HitboxData"]
+
+; ── Jab ──────────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="HitboxData_Jab"]
+script = ExtResource("Script_HitboxData")
+Damage = 5.0
+BaseKnockback = 12.0
+KnockbackGrowth = 22.0
+LaunchAngle = 45.0
+AngleFlipsWithFacing = true
+HitlagFrames = 3
+HitstunFrames = 10
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_Jab"]
+script = ExtResource("Script_AttackData")
+AttackId = "Jab"
+IsAerial = false
+StartupFrames = 2
+ActiveFrames = 3
+RecoveryFrames = 12
+HitboxNodeName = "JabHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_Jab")])
+HitstunMultiplier = 0.9
+
+; ── ForwardTilt ───────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="HitboxData_ForwardTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 13.0
+BaseKnockback = 20.0
+KnockbackGrowth = 82.0
+LaunchAngle = 35.0
+AngleFlipsWithFacing = true
+HitlagFrames = 6
+HitstunFrames = 20
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardTilt"
+IsAerial = false
+StartupFrames = 8
+ActiveFrames = 4
+RecoveryFrames = 18
+HitboxNodeName = "ForwardTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardTilt")])
+HitstunMultiplier = 1.0
+
+; ── UpTilt ────────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="HitboxData_UpTilt"]
+script = ExtResource("Script_HitboxData")
+Damage = 9.0
+BaseKnockback = 35.0
+KnockbackGrowth = 92.0
+LaunchAngle = 82.0
+AngleFlipsWithFacing = false
+HitlagFrames = 5
+HitstunFrames = 18
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_UpTilt"]
+script = ExtResource("Script_AttackData")
+AttackId = "UpTilt"
+IsAerial = false
+StartupFrames = 6
+ActiveFrames = 5
+RecoveryFrames = 19
+HitboxNodeName = "UpTiltHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_UpTilt")])
+HitstunMultiplier = 1.0
+
+; ── ForwardSmash ──────────────────────────────────────────────────────────────
+; Slow but kills very early (~80%). The sword sends at a strong outward angle.
+[sub_resource type="Resource" id="HitboxData_ForwardSmash"]
+script = ExtResource("Script_HitboxData")
+Damage = 20.0
+BaseKnockback = 28.0
+KnockbackGrowth = 96.0
+LaunchAngle = 40.0
+AngleFlipsWithFacing = true
+HitlagFrames = 10
+HitstunFrames = 32
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardSmash"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardSmash"
+IsAerial = false
+StartupFrames = 13
+ActiveFrames = 3
+RecoveryFrames = 40
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardSmash")])
+HitstunMultiplier = 1.1
+
+; ── NeutralAir ────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="HitboxData_NeutralAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 11.0
+BaseKnockback = 22.0
+KnockbackGrowth = 76.0
+LaunchAngle = 50.0
+AngleFlipsWithFacing = true
+HitlagFrames = 5
+HitstunFrames = 18
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralAir"
+IsAerial = true
+StartupFrames = 3
+ActiveFrames = 4
+RecoveryFrames = 19
+HitboxNodeName = "NairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_NeutralAir")])
+HitstunMultiplier = 1.0
+
+; ── ForwardAir ────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="HitboxData_ForwardAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 14.0
+BaseKnockback = 20.0
+KnockbackGrowth = 74.0
+LaunchAngle = 38.0
+AngleFlipsWithFacing = true
+HitlagFrames = 7
+HitstunFrames = 24
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_ForwardAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "ForwardAir"
+IsAerial = true
+StartupFrames = 7
+ActiveFrames = 3
+RecoveryFrames = 22
+HitboxNodeName = "FairHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_ForwardAir")])
+HitstunMultiplier = 1.0
+
+; ── BackAir ───────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="HitboxData_BackAir"]
+script = ExtResource("Script_HitboxData")
+Damage = 16.0
+BaseKnockback = 24.0
+KnockbackGrowth = 80.0
+LaunchAngle = 42.0
+AngleFlipsWithFacing = true
+HitlagFrames = 8
+HitstunFrames = 28
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_BackAir"]
+script = ExtResource("Script_AttackData")
+AttackId = "BackAir"
+IsAerial = true
+StartupFrames = 5
+ActiveFrames = 3
+RecoveryFrames = 24
+HitboxNodeName = "BackAirHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_BackAir")])
+HitstunMultiplier = 1.0
+
+; ── NeutralSpecial — Limit Slash ─────────────────────────────────────────────
+; Slow (18 frames startup) but absurdly powerful. Kills at 60% near the ledge.
+; Does NOT use a projectile — it's a burst-range melee sword wave.
+[sub_resource type="Resource" id="HitboxData_LimitSlash"]
+script = ExtResource("Script_HitboxData")
+Damage = 22.0
+BaseKnockback = 38.0
+KnockbackGrowth = 98.0
+LaunchAngle = 42.0
+AngleFlipsWithFacing = true
+HitlagFrames = 12
+HitstunFrames = 36
+Type = 0
+IgnoresDI = false
+HitboxId = 0
+
+[sub_resource type="Resource" id="AttackData_NeutralSpecial"]
+script = ExtResource("Script_AttackData")
+AttackId = "NeutralSpecial"
+IsAerial = false
+StartupFrames = 17
+ActiveFrames = 4
+RecoveryFrames = 34
+HitboxNodeName = "ForwardSmashHitbox"
+Hitboxes = Array[Resource]([SubResource("HitboxData_LimitSlash")])
+HitstunMultiplier = 1.15
+
+[resource]
+script = ExtResource("Script_AttackLibrary")
+Attacks = Array[Resource]([SubResource("AttackData_Jab"), SubResource("AttackData_ForwardTilt"), SubResource("AttackData_UpTilt"), SubResource("AttackData_ForwardSmash"), SubResource("AttackData_NeutralAir"), SubResource("AttackData_ForwardAir"), SubResource("AttackData_BackAir"), SubResource("AttackData_NeutralSpecial")])

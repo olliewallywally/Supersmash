@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Game/MatchManager.cs" id="s_match"]
 [ext_resource type="Script" path="res://Scripts/Stage/HitstopManager.cs" id="s_hitstop"]
 [ext_resource type="Script" path="res://Scripts/Stage/RespawnManager.cs" id="s_respawn"]
 [ext_resource type="Script" path="res://Scripts/Game/MatchHud.cs" id="s_hud"]
+[ext_resource type="Script" path="res://Scripts/UI/PauseMenu.cs" id="s_pause"]
 [ext_resource type="PackedScene" path="res://Scenes/Stage.tscn" id="r_stage"]
 [ext_resource type="PackedScene" path="res://Scenes/Fighter.tscn" id="r_fighter"]
 
@@ -21,3 +22,6 @@ script = ExtResource("s_respawn")
 
 [node name="Hud" type="CanvasLayer" parent="."]
 script = ExtResource("s_hud")
+
+[node name="PauseMenu" type="CanvasLayer" parent="."]
+script = ExtResource("s_pause")

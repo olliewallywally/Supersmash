@@ -20,8 +20,8 @@ size = Vector2(100, 4000)
 size = Vector2(44, 90)
 
 [sub_resource type="Gradient" id="grad_sky"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(0.08, 0.09, 0.18, 1, 0.22, 0.16, 0.35, 1)
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.18, 0.42, 0.85, 1, 0.38, 0.68, 0.94, 1, 0.72, 0.88, 0.98, 1)
 
 [sub_resource type="GradientTexture2D" id="tex_sky"]
 gradient = SubResource("grad_sky")
@@ -29,12 +29,25 @@ fill_to = Vector2(0, 1)
 
 [node name="Stage" type="Node2D"]
 
+; ── Sky background ────────────────────────────────────────────────────────────
 [node name="Sky" type="Sprite2D" parent="."]
 z_index = -10
 position = Vector2(0, -100)
 scale = Vector2(70, 40)
 texture = SubResource("tex_sky")
 
+; ── Distant mountains (layered depth) ─────────────────────────────────────────
+[node name="MountainsFar" type="Polygon2D" parent="."]
+z_index = -8
+color = Color(0.58, 0.70, 0.84, 1)
+polygon = PackedVector2Array(-3000, 500, -2800, 30, -2300, 190, -1900, -10, -1500, 140, -1100, -60, -700, 100, -350, -80, -100, 60, 0, -100, 100, 60, 350, -80, 700, 100, 1100, -60, 1500, 140, 1900, -10, 2300, 190, 2800, 30, 3000, 500)
+
+[node name="MountainsNear" type="Polygon2D" parent="."]
+z_index = -6
+color = Color(0.40, 0.54, 0.70, 1)
+polygon = PackedVector2Array(-3000, 500, -2600, 230, -2100, 320, -1700, 180, -1300, 280, -900, 195, -500, 285, -150, 210, 0, 295, 150, 210, 500, 285, 900, 195, 1300, 280, 1700, 180, 2100, 320, 2600, 230, 3000, 500)
+
+; ── Main floor — floating island ──────────────────────────────────────────────
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2(0, 330)
 collision_layer = 8
@@ -43,14 +56,27 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 shape = SubResource("shape_floor")
 
-[node name="Visual" type="Polygon2D" parent="Floor"]
-color = Color(0.32, 0.25, 0.18, 1)
-polygon = PackedVector2Array(-700, -30, 700, -30, 700, 30, -700, 30)
+; Rocky underbelly — organic stalactite shape below the platform
+[node name="FloorRocks" type="Polygon2D" parent="Floor"]
+color = Color(0.35, 0.30, 0.24, 1)
+polygon = PackedVector2Array(-700, 30, 700, 30, 660, 70, 540, 108, 380, 132, 200, 122, 0, 148, -200, 122, -380, 132, -540, 108, -660, 70, -700, 30)
 
-[node name="VisualTop" type="Polygon2D" parent="Floor"]
-color = Color(0.42, 0.62, 0.28, 1)
+; Stone body
+[node name="FloorStone" type="Polygon2D" parent="Floor"]
+color = Color(0.52, 0.46, 0.38, 1)
+polygon = PackedVector2Array(-700, -18, 700, -18, 700, 30, -700, 30)
+
+; Grass surface
+[node name="FloorGrass" type="Polygon2D" parent="Floor"]
+color = Color(0.32, 0.70, 0.22, 1)
 polygon = PackedVector2Array(-700, -30, 700, -30, 700, -18, -700, -18)
 
+; Bright grass top edge
+[node name="FloorGrassEdge" type="Polygon2D" parent="Floor"]
+color = Color(0.50, 0.88, 0.34, 1)
+polygon = PackedVector2Array(-700, -30, 700, -30, 700, -27, -700, -27)
+
+; ── Platform Left ─────────────────────────────────────────────────────────────
 [node name="PlatformLeft" type="StaticBody2D" parent="."]
 position = Vector2(-280, 80)
 collision_layer = 16
@@ -60,10 +86,19 @@ collision_mask = 0
 shape = SubResource("shape_plat")
 one_way_collision = true
 
-[node name="Visual" type="Polygon2D" parent="PlatformLeft"]
-color = Color(0.5, 0.42, 0.3, 1)
+[node name="PlatUnder" type="Polygon2D" parent="PlatformLeft"]
+color = Color(0.28, 0.32, 0.42, 1)
+polygon = PackedVector2Array(-120, 8, 120, 8, 115, 20, -115, 20)
+
+[node name="PlatBody" type="Polygon2D" parent="PlatformLeft"]
+color = Color(0.55, 0.60, 0.72, 1)
 polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
 
+[node name="PlatEdge" type="Polygon2D" parent="PlatformLeft"]
+color = Color(0.78, 0.83, 0.92, 1)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, -5, -120, -5)
+
+; ── Platform Right ────────────────────────────────────────────────────────────
 [node name="PlatformRight" type="StaticBody2D" parent="."]
 position = Vector2(280, 80)
 collision_layer = 16
@@ -73,10 +108,19 @@ collision_mask = 0
 shape = SubResource("shape_plat")
 one_way_collision = true
 
-[node name="Visual" type="Polygon2D" parent="PlatformRight"]
-color = Color(0.5, 0.42, 0.3, 1)
+[node name="PlatUnder" type="Polygon2D" parent="PlatformRight"]
+color = Color(0.28, 0.32, 0.42, 1)
+polygon = PackedVector2Array(-120, 8, 120, 8, 115, 20, -115, 20)
+
+[node name="PlatBody" type="Polygon2D" parent="PlatformRight"]
+color = Color(0.55, 0.60, 0.72, 1)
 polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
 
+[node name="PlatEdge" type="Polygon2D" parent="PlatformRight"]
+color = Color(0.78, 0.83, 0.92, 1)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, -5, -120, -5)
+
+; ── Platform Top ──────────────────────────────────────────────────────────────
 [node name="PlatformTop" type="StaticBody2D" parent="."]
 position = Vector2(0, -140)
 collision_layer = 16
@@ -86,10 +130,19 @@ collision_mask = 0
 shape = SubResource("shape_plat")
 one_way_collision = true
 
-[node name="Visual" type="Polygon2D" parent="PlatformTop"]
-color = Color(0.5, 0.42, 0.3, 1)
+[node name="PlatUnder" type="Polygon2D" parent="PlatformTop"]
+color = Color(0.28, 0.32, 0.42, 1)
+polygon = PackedVector2Array(-120, 8, 120, 8, 115, 20, -115, 20)
+
+[node name="PlatBody" type="Polygon2D" parent="PlatformTop"]
+color = Color(0.55, 0.60, 0.72, 1)
 polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
 
+[node name="PlatEdge" type="Polygon2D" parent="PlatformTop"]
+color = Color(0.78, 0.83, 0.92, 1)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, -5, -120, -5)
+
+; ── Blast zones (unchanged) ───────────────────────────────────────────────────
 [node name="BlastTop" type="Area2D" parent="."]
 position = Vector2(0, -1300)
 collision_layer = 0
@@ -126,6 +179,7 @@ script = ExtResource("s_blast")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BlastRight"]
 shape = SubResource("shape_blast_v")
 
+; ── Ledge zones (unchanged) ───────────────────────────────────────────────────
 [node name="LedgeLeft" type="Area2D" parent="."]
 position = Vector2(-722, 330)
 collision_layer = 0
@@ -146,6 +200,7 @@ Facing = -1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LedgeRight"]
 shape = SubResource("shape_ledge")
 
+; ── Spawn points & camera (unchanged) ────────────────────────────────────────
 [node name="SpawnPoint0" type="Marker2D" parent="."]
 position = Vector2(-250, 60)
 

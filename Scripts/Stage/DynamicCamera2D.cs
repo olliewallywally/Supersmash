@@ -42,6 +42,8 @@ public partial class DynamicCamera2D : Camera2D
     // ── Internal ──────────────────────────────────────────────────────────────
 
     private float _currentZoom;
+    private float _shakeIntensity;
+    private int   _shakeFrames;
 
     public override void _Ready()
     {
@@ -73,6 +75,22 @@ public partial class DynamicCamera2D : Camera2D
         float zoomT      = 1f - Mathf.Exp(-ZoomSmoothSpeed * dt);
         _currentZoom     = Mathf.Lerp(_currentZoom, targetZoom, zoomT);
         Zoom             = Vector2.One * _currentZoom;
+
+        // ── Screen shake ──────────────────────────────────────────────────────
+        if (_shakeFrames > 0)
+        {
+            Offset = new Vector2(
+                (float)GD.RandRange(-_shakeIntensity, _shakeIntensity),
+                (float)GD.RandRange(-_shakeIntensity, _shakeIntensity));
+            _shakeFrames--;
+            if (_shakeFrames == 0) Offset = Vector2.Zero;
+        }
+    }
+
+    public void Shake(float intensity, int frames = 7)
+    {
+        _shakeIntensity = Mathf.Max(_shakeIntensity, intensity);
+        _shakeFrames    = Mathf.Max(_shakeFrames, frames);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

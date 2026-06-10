@@ -46,8 +46,14 @@ public partial class RespawnManager : Node
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
-    public override void _Ready()
+    public override void _Ready() { }
+
+    /// Called by MatchManager after Players and StartingStocks are wired.
+    /// _Ready() fires before MatchManager sets those properties, so we cannot
+    /// initialise there.
+    public void Setup()
     {
+        _stocks.Clear();
         foreach (var character in Players)
         {
             if (character is null) continue;
