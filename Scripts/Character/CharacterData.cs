@@ -104,4 +104,21 @@ public partial class CharacterData : Resource
     /// Frames of FullInvincibility granted the moment the character lands after a respawn.
     /// 120 frames = 2 seconds at 60 Hz — enough to get a footing without being ambushed.
     [Export] public int SpawnInvincibilityFrames { get; set; } = 120;
+
+    [ExportGroup("Appearance")]
+    /// Drives the procedural VectorFighterRig. Each colour maps to one body region.
+    /// Defaults give a generic fighter; override per archetype for a distinct look.
+    [Export] public Color HairColor   { get; set; } = new Color(0.30f, 0.22f, 0.16f);
+    [Export] public Color SkinColor   { get; set; } = new Color(0.93f, 0.78f, 0.66f);
+    /// Primary torso / costume colour.
+    [Export] public Color ShirtColor  { get; set; } = new Color(0.30f, 0.45f, 0.78f);
+    /// Legs / lower body colour.
+    [Export] public Color PantsColor  { get; set; } = new Color(0.22f, 0.24f, 0.30f);
+    /// Trim, pauldron, boots — a highlight that ties the silhouette together.
+    [Export] public Color AccentColor { get; set; } = new Color(0.80f, 0.80f, 0.85f);
+    /// When true the rig carries a sword in its lead hand and uses sweeping arcs.
+    [Export] public bool  HasSword    { get; set; } = false;
+    /// Blade length in pixels. Big values read as a greatsword.
+    [Export] public float SwordLength { get; set; } = 64f;
+    [Export] public Color SwordColor  { get; set; } = new Color(0.82f, 0.84f, 0.88f);
 }

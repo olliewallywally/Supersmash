@@ -95,3 +95,13 @@ AttackerHitlagFrames = 4
 
 ; ── Respawn ───────────────────────────────────────────────────────────────────
 SpawnInvincibilityFrames = 120
+
+; ── Appearance — Marth-inspired: blue hair, blue tunic, gold tiara, Falchion ───
+HairColor = Color(0.30, 0.46, 0.82, 1)
+SkinColor = Color(0.95, 0.82, 0.70, 1)
+ShirtColor = Color(0.20, 0.35, 0.70, 1)
+PantsColor = Color(0.80, 0.80, 0.86, 1)
+AccentColor = Color(0.86, 0.74, 0.30, 1)
+HasSword = true
+SwordLength = 70.0
+SwordColor = Color(0.86, 0.89, 0.96, 1)

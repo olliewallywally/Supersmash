@@ -99,3 +99,11 @@ AttackerHitlagFrames = 3
 
 ; ── Respawn ───────────────────────────────────────────────────────────────────
 SpawnInvincibilityFrames = 120
+
+; ── Appearance — Falco-inspired: blue plumage, gold beak/accents ───────────────
+HairColor = Color(0.24, 0.44, 0.86, 1)
+SkinColor = Color(0.95, 0.78, 0.32, 1)
+ShirtColor = Color(0.30, 0.50, 0.88, 1)
+PantsColor = Color(0.20, 0.28, 0.45, 1)
+AccentColor = Color(0.92, 0.76, 0.26, 1)
+HasSword = false

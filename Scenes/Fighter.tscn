@@ -1,6 +1,7 @@
-[gd_scene load_steps=37 format=3]
+[gd_scene load_steps=38 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Character/CharacterController.cs" id="s_controller"]
+[ext_resource type="Script" path="res://Scripts/Character/Components/VectorFighterRig.cs" id="s_rig"]
 [ext_resource type="Script" path="res://Scripts/Character/StateMachine/CharacterStateMachine.cs" id="s_fsm"]
 [ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/IdleState.cs" id="s_idle"]
 [ext_resource type="Script" path="res://Scripts/Character/StateMachine/States/RunState.cs" id="s_run"]
@@ -133,7 +134,11 @@ _visualRoot = NodePath("../VisualRoot")
 
 [node name="VisualRoot" type="Node2D" parent="."]
 
+[node name="VectorFighterRig" type="Node2D" parent="VisualRoot"]
+script = ExtResource("s_rig")
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="VisualRoot"]
+visible = false
 position = Vector2(0, -7)
 scale = Vector2(2.5, 2.5)
 sprite_frames = ExtResource("r_frames")

@@ -108,3 +108,11 @@ AttackerHitlagFrames = 4
 
 ; ── Respawn ───────────────────────────────────────────────────────────────────
 SpawnInvincibilityFrames = 120
+
+; ── Appearance — Falcon-inspired: red helmet, blue racing suit, gold trim ──────
+HairColor = Color(0.84, 0.20, 0.20, 1)
+SkinColor = Color(0.90, 0.72, 0.58, 1)
+ShirtColor = Color(0.30, 0.34, 0.52, 1)
+PantsColor = Color(0.28, 0.30, 0.42, 1)
+AccentColor = Color(0.92, 0.78, 0.30, 1)
+HasSword = false

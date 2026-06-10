@@ -82,3 +82,11 @@ AttackerHitlagFrames = 4
 
 ; ── Respawn ───────────────────────────────────────────────────────────────────
 SpawnInvincibilityFrames = 120
+
+; ── Appearance — heavyweight bruiser: earthy green, broad build ────────────────
+HairColor = Color(0.28, 0.22, 0.18, 1)
+SkinColor = Color(0.90, 0.74, 0.60, 1)
+ShirtColor = Color(0.38, 0.58, 0.34, 1)
+PantsColor = Color(0.30, 0.30, 0.32, 1)
+AccentColor = Color(0.72, 0.56, 0.30, 1)
+HasSword = false
